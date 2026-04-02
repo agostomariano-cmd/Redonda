@@ -7,35 +7,34 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#0a0c10;--surface:#111318;--surface2:#181c24;--surface3:#1e222e;
-  --border:#252a38;--accent:#00e676;--accent2:#00b0ff;--red:#ff3d3d;
-  --yellow:#ffd600;--text:#e8ecf4;--text2:#8a92a8;--text3:#545c72;
-}
+:root{--bg:#0a0c10;--surface:#111318;--surface2:#181c24;--surface3:#1e222e;--border:#252a38;--accent:#00e676;--accent2:#00b0ff;--red:#ff3d3d;--yellow:#ffd600;--text:#e8ecf4;--text2:#8a92a8;--text3:#545c72}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-
-/* AUTH */
 #auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
-.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px;width:420px;max-width:100%}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px;width:440px;max-width:100%}
 .auth-logo{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:3px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
 .auth-sub{font-size:12px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:32px}
-.auth-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;color:var(--text2);margin-bottom:20px;text-transform:uppercase}
+.auth-tabs{display:flex;gap:0;margin-bottom:28px;border-bottom:1px solid var(--border)}
+.auth-tab{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;color:var(--text3);padding:10px 20px 10px 0;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;text-transform:uppercase;margin-bottom:-1px}
+.auth-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.auth-panel{display:none}.auth-panel.active{display:block}
 .form-group{margin-bottom:16px}
 .form-label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2);margin-bottom:7px;display:block}
 .form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-family:'Barlow',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .15s}
 .form-input:focus{border-color:var(--accent)}
-.auth-error{background:rgba(255,61,61,.1);border:1px solid rgba(255,61,61,.3);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:16px;display:none}
-.auth-error.show{display:block}
-
-/* LAYOUT */
-.app{display:flex;min-height:100vh}
+.auth-msg{border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px;display:none;line-height:1.5}
+.auth-msg.show{display:block}
+.auth-msg.error{background:rgba(255,61,61,.1);border:1px solid rgba(255,61,61,.3);color:var(--red)}
+.auth-msg.success{background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.3);color:var(--accent)}
+#pending-screen{display:none;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.pending-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px;width:440px;max-width:100%;text-align:center}
+.pending-icon{font-size:64px;margin-bottom:20px}
+.pending-title{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;color:var(--yellow);margin-bottom:12px}
+.pending-text{color:var(--text2);font-size:15px;line-height:1.7;margin-bottom:24px}
 #app-screen{display:none;width:100%}
 #app-screen.show{display:flex}
 .sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
 .main{margin-left:220px;flex:1;padding:32px}
-
-/* SIDEBAR */
 .logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
 .logo-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;line-height:1;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .logo-sub{font-size:11px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
@@ -51,15 +50,12 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 .user-role{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;margin-top:4px}
 .role-admin{background:rgba(0,230,118,.15);color:var(--accent)}
 .role-player{background:rgba(0,176,255,.15);color:var(--accent2)}
-
-/* PAGES */
+.nav-badge{background:var(--yellow);color:#000;border-radius:20px;font-size:10px;font-weight:700;padding:1px 6px;margin-left:auto}
 .page{display:none}.page.active{display:block}
 .page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
 .page-title{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:2px;line-height:1}
 .page-title span{color:var(--accent)}
 .page-sub{color:var(--text2);font-size:13px;margin-top:4px}
-
-/* BUTTONS */
 .btn{padding:11px 22px;border:none;border-radius:10px;font-family:'Barlow',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .18s;letter-spacing:.4px;display:inline-flex;align-items:center;gap:8px}
 .btn-primary{background:var(--accent);color:#000}
 .btn-primary:hover{background:#00ff88;transform:translateY(-1px)}
@@ -69,31 +65,22 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 .btn-danger:hover{background:rgba(255,61,61,.22)}
 .btn-sm{padding:7px 14px;font-size:12px;border-radius:7px}
 .btn-icon{padding:8px;width:34px;height:34px;justify-content:center;font-size:16px;border-radius:8px}
-
-/* CARDS */
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:16px}
 .card-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2);margin-bottom:16px}
-
-/* GRID */
 .grid-2{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
-
-/* TEAM CARD */
 .team-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;transition:border-color .2s,transform .2s}
 .team-card:hover{border-color:var(--accent);transform:translateY(-2px)}
 .team-logo-wrap{width:64px;height:64px;border-radius:50%;border:2px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:12px;overflow:hidden}
 .team-logo-wrap img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-.team-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px}
+.team-name-el{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px}
 .team-count{font-size:12px;color:var(--text3);margin-top:2px}
 .team-card-actions{display:flex;gap:6px;margin-top:14px}
-
-/* PLAYER LIST */
 .player-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
 .player-row:last-child{border-bottom:none}
 .player-num{width:28px;height:28px;border-radius:8px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text3);flex-shrink:0}
 .player-name-text{flex:1;font-weight:600;font-size:14px}
 .player-pos{font-size:11px;color:var(--text3);background:var(--surface2);padding:2px 8px;border-radius:20px}
-
-/* TABLE */
 .standings-table{width:100%;border-collapse:collapse}
 .standings-table th{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);padding:10px 14px;text-align:center;border-bottom:1px solid var(--border)}
 .standings-table th:first-child,.standings-table th:nth-child(2){text-align:left}
@@ -108,26 +95,22 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 .team-inline{display:flex;align-items:center;gap:10px}
 .team-mini-logo{width:32px;height:32px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:14px;overflow:hidden;flex-shrink:0}
 .team-mini-logo img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-
-/* FIXTURE */
 .fixture-week{margin-bottom:28px}
-.week-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.week-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
 .week-label{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--text2)}
-.week-line{flex:1;height:1px;background:var(--border)}
+.week-line{flex:1;height:1px;background:var(--border);min-width:20px}
 .week-status{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:1px;text-transform:uppercase}
 .status-played{background:rgba(0,230,118,.12);color:var(--accent)}
 .status-upcoming{background:rgba(0,176,255,.12);color:var(--accent2)}
 .status-postponed{background:rgba(255,214,0,.12);color:var(--yellow)}
 .match-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 22px;display:flex;align-items:center;gap:16px;margin-bottom:10px;flex-wrap:wrap}
-.match-team{flex:1;display:flex;align-items:center;gap:10px;min-width:120px}
+.match-team{flex:1;display:flex;align-items:center;gap:10px;min-width:100px}
 .match-team.right{flex-direction:row-reverse;text-align:right}
 .match-team-name{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:.5px}
 .match-score{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 16px;min-width:90px;justify-content:center}
 .score-num{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--text);letter-spacing:2px;min-width:28px;text-align:center}
 .score-sep{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--text3)}
 .match-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
-
-/* MODALS */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:30px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;animation:modalIn .2s ease}
@@ -137,27 +120,19 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:24px}
 .section-divider{height:1px;background:var(--border);margin:24px 0}
-
-/* LOGO UPLOAD */
-.logo-upload-area{width:90px;height:90px;border-radius:50%;border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:border-color .2s;overflow:hidden;background:var(--surface2);position:relative}
+.logo-upload-area{width:90px;height:90px;border-radius:50%;border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:border-color .2s;overflow:hidden;background:var(--surface2)}
 .logo-upload-area:hover{border-color:var(--accent)}
 .logo-upload-area img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-
-/* PRESENCE */
 .week-selector{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
 .week-tab{padding:8px 16px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text2);transition:all .15s}
 .week-tab.active{background:rgba(0,230,118,.12);border-color:var(--accent);color:var(--accent)}
 .presence-team{margin-bottom:22px}
 .presence-team-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
 .presence-team-name{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:.5px}
-
-/* STATS */
 .stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;margin-bottom:24px}
 .stat-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px}
 .stat-val{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--accent);letter-spacing:1px;line-height:1}
 .stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
-
-/* TEAM CHECK */
 .team-check-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:8px}
 .team-check-item{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;transition:all .15s}
 .team-check-item.selected{border-color:var(--accent);background:rgba(0,230,118,.06)}
@@ -165,234 +140,129 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 .check-icon{width:18px;height:18px;border-radius:5px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;transition:all .15s}
 .team-check-item.selected .check-icon{background:var(--accent);border-color:var(--accent);color:#000}
 .check-team-name{font-size:13px;font-weight:600}
-
-/* EMPTY STATE */
+.status-badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:1px;text-transform:uppercase}
+.badge-pending{background:rgba(255,214,0,.15);color:var(--yellow)}
+.badge-approved{background:rgba(0,230,118,.15);color:var(--accent)}
+.badge-rejected{background:rgba(255,61,61,.15);color:var(--red)}
+.pending-user-card{background:var(--surface2);border:1px solid rgba(255,214,0,.3);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:10px;flex-wrap:wrap}
+.pending-pulse{width:10px;height:10px;border-radius:50%;background:var(--yellow);animation:pulse 1.5s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
 .empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
 .empty-state .icon{font-size:48px;margin-bottom:12px}
 .empty-state p{font-size:14px;line-height:1.6}
-
-/* TOAST */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 20px;font-size:14px;font-weight:600;z-index:9999;transform:translateY(80px);opacity:0;transition:all .3s}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 20px;font-size:14px;font-weight:600;z-index:9999;transform:translateY(80px);opacity:0;transition:all .3s;max-width:320px;line-height:1.4}
 .toast.show{transform:none;opacity:1}
 .toast.success{border-color:var(--accent);color:var(--accent)}
 .toast.error{border-color:var(--red);color:var(--red)}
-
-/* LOADING */
-.loading{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--text3)}
-.spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-right:12px}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* ADMIN BADGE */
-.admin-section-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(0,230,118,.1);color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
-
-/* SCROLLBAR */
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-
-/* PLAYER VIEW (player-only screens) */
-.player-hero{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;display:flex;align-items:center;gap:20px}
-.player-team-logo{width:80px;height:80px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:36px;overflow:hidden;border:2px solid var(--border)}
-.player-team-logo img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-.player-hero-info h2{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px}
-.player-hero-info p{color:var(--text2);font-size:13px;margin-top:4px}
-
-@media(max-width:640px){
-  .sidebar{width:60px}
-  .nav-btn span{display:none}
-  .logo-title{font-size:18px}
-  .logo-sub{display:none}
-  .main{margin-left:60px;padding:16px}
-  .form-row{grid-template-columns:1fr}
-  .match-card{flex-direction:column;align-items:stretch}
-}
+.toast.warning{border-color:var(--yellow);color:var(--yellow)}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@media(max-width:640px){.sidebar{width:60px}.nav-btn span,.nav-badge{display:none}.logo-title{font-size:18px}.logo-sub{display:none}.main{margin-left:60px;padding:16px}.form-row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<!-- AUTH SCREEN -->
+<!-- AUTH -->
 <div id="auth-screen">
   <div class="auth-card">
     <div class="auth-logo">LA REDONDA</div>
     <div class="auth-sub">Fútbol 5 — Gestión de Torneo</div>
-    <div class="auth-title">Iniciar sesión</div>
-    <div class="auth-error" id="auth-error"></div>
-    <div class="form-group">
-      <label class="form-label">Email</label>
-      <input class="form-input" type="email" id="login-email" placeholder="tu@mail.com" autocomplete="email">
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="switchAuthTab('login')">Iniciar sesión</div>
+      <div class="auth-tab" onclick="switchAuthTab('register')">Registrarse</div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Contraseña</label>
-      <input class="form-input" type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+    <div class="auth-panel active" id="panel-login">
+      <div class="auth-msg" id="login-msg"></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="login-email" placeholder="tu@mail.com"></div>
+      <div class="form-group"><label class="form-label">Contraseña</label><input class="form-input" type="password" id="login-password" placeholder="••••••••"></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px" onclick="doLogin()" id="login-btn">Entrar</button>
     </div>
-    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px" onclick="doLogin()" id="login-btn">
-      Entrar
-    </button>
-    <p style="text-align:center;color:var(--text3);font-size:12px;margin-top:16px">
-      ¿No tenés cuenta? Pedile al admin que te la cree.
-    </p>
+    <div class="auth-panel" id="panel-register">
+      <div class="auth-msg" id="register-msg"></div>
+      <div class="form-group"><label class="form-label">Nombre completo</label><input class="form-input" id="reg-name" placeholder="Juan García"></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="reg-email" placeholder="tu@mail.com"></div>
+      <div class="form-group"><label class="form-label">Contraseña</label><input class="form-input" type="password" id="reg-password" placeholder="Mínimo 6 caracteres"></div>
+      <div class="form-group"><label class="form-label">Confirmar contraseña</label><input class="form-input" type="password" id="reg-password2" placeholder="Repetí tu contraseña"></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px" onclick="doRegister()" id="register-btn">Solicitar acceso</button>
+      <p style="text-align:center;color:var(--text3);font-size:12px;margin-top:14px;line-height:1.6">Tu cuenta quedará pendiente hasta que el admin la apruebe. Te avisaremos por mail.</p>
+    </div>
   </div>
 </div>
 
-<!-- APP SCREEN -->
+<!-- PENDING -->
+<div id="pending-screen">
+  <div class="pending-card">
+    <div class="pending-icon" id="pending-icon">⏳</div>
+    <div class="pending-title" id="pending-title">CUENTA PENDIENTE</div>
+    <p class="pending-text" id="pending-text">Tu solicitud fue enviada correctamente.<br><br>El admin revisará tu cuenta y recibirás un mail cuando sea aprobada.</p>
+    <button class="btn btn-secondary" style="width:100%;justify-content:center" onclick="doLogout()">Cerrar sesión</button>
+  </div>
+</div>
+
+<!-- APP -->
 <div id="app-screen">
   <aside class="sidebar">
-    <div class="logo">
-      <div class="logo-title">LA REDONDA</div>
-      <div class="logo-sub">Fútbol 5</div>
-    </div>
-    <nav class="nav" id="sidebar-nav">
-      <button class="nav-btn active admin-only" onclick="showPage('dashboard')">
-        <span class="icon">⚽</span><span>Panel General</span>
-      </button>
-      <button class="nav-btn admin-only" onclick="showPage('equipos')">
-        <span class="icon">🛡️</span><span>Equipos</span>
-      </button>
-      <button class="nav-btn" onclick="showPage('presencia')">
-        <span class="icon">✅</span><span>Presencia</span>
-      </button>
-      <button class="nav-btn" onclick="showPage('torneo')">
-        <span class="icon">🏆</span><span>Torneo</span>
-      </button>
-      <button class="nav-btn" onclick="showPage('fixture')">
-        <span class="icon">📅</span><span>Fixture</span>
-      </button>
-      <button class="nav-btn" onclick="showPage('compromiso')">
-        <span class="icon">📊</span><span>Compromiso Fútbol</span>
-      </button>
-      <button class="nav-btn admin-only" onclick="showPage('usuarios')">
-        <span class="icon">👤</span><span>Usuarios</span>
-      </button>
+    <div class="logo"><div class="logo-title">LA REDONDA</div><div class="logo-sub">Fútbol 5</div></div>
+    <nav class="nav">
+      <button class="nav-btn admin-only" onclick="showPage('dashboard')"><span class="icon">⚽</span><span>Panel General</span></button>
+      <button class="nav-btn admin-only" onclick="showPage('equipos')"><span class="icon">🛡️</span><span>Equipos</span></button>
+      <button class="nav-btn" onclick="showPage('presencia')"><span class="icon">✅</span><span>Presencia</span></button>
+      <button class="nav-btn" onclick="showPage('torneo')"><span class="icon">🏆</span><span>Torneo</span></button>
+      <button class="nav-btn" onclick="showPage('fixture')"><span class="icon">📅</span><span>Fixture</span></button>
+      <button class="nav-btn" onclick="showPage('compromiso')"><span class="icon">📊</span><span>Compromiso Fútbol</span></button>
+      <button class="nav-btn admin-only" onclick="showPage('usuarios')" id="nav-usuarios"><span class="icon">👤</span><span>Usuarios</span><span class="nav-badge" id="pending-badge" style="display:none">0</span></button>
     </nav>
     <div class="sidebar-bottom">
-      <div class="user-badge">
-        <strong id="sb-user-name">—</strong>
-        <div id="sb-user-email" style="font-size:11px;color:var(--text3)"></div>
-        <span class="user-role" id="sb-user-role"></span>
-      </div>
-      <button class="btn btn-secondary btn-sm" style="width:100%;margin-top:10px;justify-content:center" onclick="doLogout()">
-        Cerrar sesión
-      </button>
+      <div class="user-badge"><strong id="sb-user-name">—</strong><div id="sb-user-email" style="font-size:11px;color:var(--text3)"></div><span class="user-role" id="sb-user-role"></span></div>
+      <button class="btn btn-secondary btn-sm" style="width:100%;margin-top:10px;justify-content:center" onclick="doLogout()">Cerrar sesión</button>
     </div>
   </aside>
-
   <main class="main">
-
-    <!-- PANEL GENERAL (admin) -->
     <div class="page" id="page-dashboard">
-      <div class="page-header">
-        <div>
-          <div class="page-title">PANEL <span>GENERAL</span></div>
-          <div class="page-sub">Vista general del torneo</div>
-        </div>
-        <button class="btn btn-primary" onclick="openModal('modal-new-tournament')">➕ Crear torneo nuevo</button>
-      </div>
+      <div class="page-header"><div><div class="page-title">PANEL <span>GENERAL</span></div><div class="page-sub">Vista general del torneo</div></div><button class="btn btn-primary" onclick="openModal('modal-new-tournament')">➕ Crear torneo nuevo</button></div>
       <div class="stats-row">
         <div class="stat-box"><div class="stat-val" id="stat-equipos">0</div><div class="stat-label">Equipos</div></div>
         <div class="stat-box"><div class="stat-val" id="stat-jugadores">0</div><div class="stat-label">Jugadores</div></div>
         <div class="stat-box"><div class="stat-val" id="stat-fechas">0</div><div class="stat-label">Fechas jugadas</div></div>
         <div class="stat-box"><div class="stat-val" id="stat-semana">—</div><div class="stat-label">Próxima fecha</div></div>
       </div>
-      <div class="card">
-        <div class="card-title">🏆 Líderes del Torneo</div>
-        <div id="dashboard-leaders"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
-      </div>
-      <div class="card" style="margin-top:16px">
-        <div class="card-title">📅 Próximos partidos</div>
-        <div id="dashboard-next-matches"></div>
-      </div>
+      <div class="card"><div class="card-title">🏆 Líderes del Torneo</div><div id="dashboard-leaders"></div></div>
+      <div class="card"><div class="card-title">📅 Próximos partidos</div><div id="dashboard-next-matches"></div></div>
     </div>
-
-    <!-- EQUIPOS (admin) -->
     <div class="page" id="page-equipos">
-      <div class="page-header">
-        <div>
-          <div class="page-title">EQUI<span>POS</span></div>
-          <div class="page-sub">Gestioná equipos y jugadores</div>
-        </div>
-        <button class="btn btn-primary" onclick="openModal('modal-new-team')">➕ Nuevo equipo</button>
-      </div>
+      <div class="page-header"><div><div class="page-title">EQUI<span>POS</span></div><div class="page-sub">Gestioná equipos y jugadores</div></div><button class="btn btn-primary" onclick="openModal('modal-new-team')">➕ Nuevo equipo</button></div>
       <div class="grid-2" id="teams-grid"></div>
     </div>
-
-    <!-- PRESENCIA -->
     <div class="page" id="page-presencia">
-      <div class="page-header">
-        <div>
-          <div class="page-title">PRESEN<span>CIA</span></div>
-          <div class="page-sub">Confirmación semanal de jugadores</div>
-        </div>
-      </div>
-      <div class="week-selector" id="week-selector"></div>
-      <div id="presence-content"></div>
+      <div class="page-header"><div><div class="page-title">PRESEN<span>CIA</span></div><div class="page-sub">Confirmación semanal de jugadores</div></div></div>
+      <div class="week-selector" id="week-selector"></div><div id="presence-content"></div>
     </div>
-
-    <!-- TORNEO -->
     <div class="page" id="page-torneo">
-      <div class="page-header">
-        <div>
-          <div class="page-title">TOR<span>NEO</span></div>
-          <div class="page-sub">Tabla de posiciones</div>
-        </div>
-      </div>
-      <div class="card" style="margin-bottom:20px" id="tournament-list-card">
-        <div class="card-title">🗂️ Torneos</div>
-        <div id="tournament-list"></div>
-      </div>
-      <div class="card">
-        <table class="standings-table">
-          <thead><tr>
-            <th>#</th><th>Equipo</th><th>PJ</th><th>Pts</th><th>PG</th><th>PE</th><th>PP</th><th>DG</th>
-          </tr></thead>
-          <tbody id="standings-body"></tbody>
-        </table>
-      </div>
+      <div class="page-header"><div><div class="page-title">TOR<span>NEO</span></div><div class="page-sub">Tabla de posiciones</div></div></div>
+      <div class="card" id="tournament-list-card" style="margin-bottom:20px"><div class="card-title">🗂️ Torneos</div><div id="tournament-list"></div></div>
+      <div class="card"><table class="standings-table"><thead><tr><th>#</th><th>Equipo</th><th>PJ</th><th>Pts</th><th>PG</th><th>PE</th><th>PP</th><th>DG</th></tr></thead><tbody id="standings-body"></tbody></table></div>
     </div>
-
-    <!-- FIXTURE -->
     <div class="page" id="page-fixture">
-      <div class="page-header">
-        <div>
-          <div class="page-title">FIX<span>TURE</span></div>
-          <div class="page-sub">Resultados y fechas</div>
-        </div>
-      </div>
+      <div class="page-header"><div><div class="page-title">FIX<span>TURE</span></div><div class="page-sub">Resultados y fechas</div></div></div>
       <div id="fixture-content"></div>
     </div>
-
-    <!-- COMPROMISO FÚTBOL -->
     <div class="page" id="page-compromiso">
-      <div class="page-header">
-        <div>
-          <div class="page-title">COMPROMISO <span>FÚTBOL</span></div>
-          <div class="page-sub">Ranking de participación por jugador</div>
-        </div>
-      </div>
+      <div class="page-header"><div><div class="page-title">COMPROMISO <span>FÚTBOL</span></div><div class="page-sub">Ranking de participación por jugador</div></div></div>
       <div id="compromiso-content"></div>
     </div>
-
-    <!-- USUARIOS (admin) -->
     <div class="page" id="page-usuarios">
-      <div class="page-header">
-        <div>
-          <div class="page-title">USUA<span>RIOS</span></div>
-          <div class="page-sub">Gestioná accesos al sistema</div>
-        </div>
-        <button class="btn btn-primary" onclick="openModal('modal-new-user')">➕ Crear usuario</button>
+      <div class="page-header"><div><div class="page-title">USUA<span>RIOS</span></div><div class="page-sub">Gestioná accesos al sistema</div></div></div>
+      <div class="card" id="pending-users-card" style="border-color:rgba(255,214,0,.3)">
+        <div class="card-title" style="color:var(--yellow)">⏳ Pendientes de aprobación</div>
+        <div id="pending-users-list"></div>
       </div>
-      <div class="card">
-        <div class="card-title">👥 Usuarios registrados</div>
-        <div id="users-list"></div>
-      </div>
+      <div class="card"><div class="card-title">👥 Todos los usuarios</div><div id="users-list"></div></div>
     </div>
-
   </main>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- MODAL: NUEVO EQUIPO -->
+<!-- MODALS -->
 <div class="modal-overlay" id="modal-new-team">
   <div class="modal">
     <div class="modal-title">NUEVO <span>EQUIPO</span></div>
@@ -406,1061 +276,494 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
         <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:6px">Subir logo</div>
       </div>
       <div style="flex:1">
-        <div class="form-group">
-          <label class="form-label">Nombre del equipo</label>
-          <input class="form-input" id="team-name-input" placeholder="Ej: Los Halcones">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Color principal</label>
-          <input class="form-input" type="color" id="team-color-input" value="#00e676" style="height:44px;padding:4px 8px;cursor:pointer">
-        </div>
+        <div class="form-group"><label class="form-label">Nombre del equipo</label><input class="form-input" id="team-name-input" placeholder="Ej: Los Halcones"></div>
+        <div class="form-group"><label class="form-label">Color principal</label><input class="form-input" type="color" id="team-color-input" value="#00e676" style="height:44px;padding:4px 8px;cursor:pointer"></div>
       </div>
     </div>
     <div class="section-divider"></div>
     <div class="card-title">Jugadores del equipo</div>
     <div id="players-add-list"></div>
     <button class="btn btn-secondary btn-sm" onclick="addPlayerRow()" style="margin-top:8px">+ Agregar jugador</button>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modal-new-team')">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveTeam()">Guardar equipo</button>
-    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-new-team')">Cancelar</button><button class="btn btn-primary" onclick="saveTeam()">Guardar equipo</button></div>
   </div>
 </div>
 
-<!-- MODAL: VER EQUIPO -->
 <div class="modal-overlay" id="modal-view-team">
   <div class="modal">
     <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
       <div class="team-logo-wrap" id="modal-team-logo" style="width:64px;height:64px;flex-shrink:0"></div>
-      <div>
-        <div class="modal-title" id="modal-team-title" style="margin-bottom:0"></div>
-        <div id="modal-team-count" style="color:var(--text3);font-size:12px"></div>
-      </div>
+      <div><div class="modal-title" id="modal-team-title" style="margin-bottom:0"></div><div id="modal-team-count" style="color:var(--text3);font-size:12px"></div></div>
     </div>
-    <div class="card-title">Plantel</div>
-    <div id="modal-players-list"></div>
+    <div class="card-title">Plantel</div><div id="modal-players-list"></div>
     <div class="section-divider"></div>
     <div class="card-title" style="margin-bottom:12px">Agregar jugador</div>
     <div class="form-row">
       <div class="form-group"><input class="form-input" id="add-player-name" placeholder="Nombre"></div>
-      <div class="form-group">
-        <select class="form-input" id="add-player-pos">
-          <option value="">Posición (opcional)</option>
-          <option>Arquero</option><option>Defensor</option><option>Volante</option><option>Delantero</option>
-        </select>
-      </div>
+      <div class="form-group"><select class="form-input" id="add-player-pos"><option value="">Posición</option><option>Arquero</option><option>Defensor</option><option>Volante</option><option>Delantero</option></select></div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Email (para vincular cuenta)</label>
-      <input class="form-input" type="email" id="add-player-email" placeholder="jugador@mail.com">
-    </div>
+    <div class="form-group"><label class="form-label">Email (para vincular cuenta)</label><input class="form-input" type="email" id="add-player-email" placeholder="jugador@mail.com"></div>
     <button class="btn btn-primary btn-sm" onclick="addPlayerToTeam()">Agregar jugador</button>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modal-view-team')">Cerrar</button>
-    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-view-team')">Cerrar</button></div>
   </div>
 </div>
 
-<!-- MODAL: NUEVO TORNEO -->
 <div class="modal-overlay" id="modal-new-tournament">
   <div class="modal">
     <div class="modal-title">NUEVO <span>TORNEO</span></div>
-    <div class="form-group">
-      <label class="form-label">Nombre del torneo</label>
-      <input class="form-input" id="tournament-name-input" placeholder="Ej: Copa Verano 2025">
-    </div>
+    <div class="form-group"><label class="form-label">Nombre del torneo</label><input class="form-input" id="tournament-name-input" placeholder="Ej: Copa Verano 2025"></div>
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Fecha de inicio</label>
-        <input class="form-input" type="date" id="tournament-start-date">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Día de juego</label>
-        <select class="form-input" id="tournament-day">
-          <option value="1">Lunes</option><option value="2">Martes</option><option value="3">Miércoles</option>
-          <option value="4">Jueves</option><option value="5">Viernes</option><option value="6" selected>Sábado</option><option value="0">Domingo</option>
-        </select>
-      </div>
+      <div class="form-group"><label class="form-label">Fecha de inicio</label><input class="form-input" type="date" id="tournament-start-date"></div>
+      <div class="form-group"><label class="form-label">Día de juego</label><select class="form-input" id="tournament-day"><option value="1">Lunes</option><option value="2">Martes</option><option value="3">Miércoles</option><option value="4">Jueves</option><option value="5">Viernes</option><option value="6" selected>Sábado</option><option value="0">Domingo</option></select></div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Vueltas <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3)">(cantidad de veces que cada equipo se enfrenta a todos los demás)</span></label>
-      <input class="form-input" type="number" id="tournament-vueltas" min="1" placeholder="Ej: 2" style="width:120px">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Equipos participantes</label>
-      <div id="tournament-team-select" class="team-check-grid"></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modal-new-tournament')">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveTournament()">Crear torneo</button>
-    </div>
+    <div class="form-group"><label class="form-label">Vueltas <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3)">(veces que cada equipo enfrenta a todos los demás)</span></label><input class="form-input" type="number" id="tournament-vueltas" min="1" placeholder="Ej: 2" style="width:120px"></div>
+    <div class="form-group"><label class="form-label">Equipos participantes</label><div id="tournament-team-select" class="team-check-grid"></div></div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-new-tournament')">Cancelar</button><button class="btn btn-primary" onclick="saveTournament()">Crear torneo</button></div>
   </div>
 </div>
 
-<!-- MODAL: EDITAR TORNEO -->
 <div class="modal-overlay" id="modal-edit-tournament">
   <div class="modal" style="max-width:420px">
     <div class="modal-title">EDITAR <span>TORNEO</span></div>
+    <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" id="edit-tournament-name"></div>
     <div class="form-group">
-      <label class="form-label">Nombre</label>
-      <input class="form-input" id="edit-tournament-name">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Vueltas actuales</label>
-      <div id="edit-vueltas-info" style="color:var(--text2);font-size:13px;margin-bottom:10px"></div>
-      <label class="form-label">Nueva cantidad de vueltas <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3)">(deja vacío para solo cambiar el nombre)</span></label>
+      <label class="form-label">Vueltas actuales</label><div id="edit-vueltas-info" style="color:var(--text2);font-size:13px;margin-bottom:10px"></div>
+      <label class="form-label">Nueva cantidad <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3)">(vacío = solo cambia el nombre)</span></label>
       <input class="form-input" type="number" id="edit-tournament-vueltas" min="1" placeholder="Ej: 3" style="width:120px">
-      <div style="margin-top:8px;font-size:12px;color:var(--yellow);background:rgba(255,214,0,.07);border:1px solid rgba(255,214,0,.2);border-radius:8px;padding:10px">
-        ⚠️ Cambiar las vueltas regenera el fixture y se pierden los resultados cargados.
-      </div>
+      <div style="margin-top:8px;font-size:12px;color:var(--yellow);background:rgba(255,214,0,.07);border:1px solid rgba(255,214,0,.2);border-radius:8px;padding:10px">⚠️ Cambiar las vueltas regenera el fixture y se pierden los resultados.</div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modal-edit-tournament')">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveEditTournament()">Guardar cambios</button>
-    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-edit-tournament')">Cancelar</button><button class="btn btn-primary" onclick="saveEditTournament()">Guardar cambios</button></div>
   </div>
 </div>
 
-<!-- MODAL: RESULTADO -->
 <div class="modal-overlay" id="modal-result">
   <div class="modal" style="max-width:400px">
     <div class="modal-title">CARGAR <span>RESULTADO</span></div>
     <div id="modal-result-info" style="color:var(--text2);font-size:14px;margin-bottom:20px"></div>
     <div style="display:flex;align-items:center;gap:16px;justify-content:center;margin:20px 0">
-      <div style="text-align:center">
-        <div id="result-team-a-name" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;margin-bottom:8px"></div>
-        <input type="number" min="0" id="result-score-a" class="form-input" style="width:70px;text-align:center;font-family:'Bebas Neue';font-size:28px;padding:8px" value="0">
-      </div>
+      <div style="text-align:center"><div id="result-team-a-name" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;margin-bottom:8px"></div><input type="number" min="0" id="result-score-a" class="form-input" style="width:70px;text-align:center;font-family:'Bebas Neue';font-size:28px;padding:8px" value="0"></div>
       <div style="font-family:'Bebas Neue';font-size:28px;color:var(--text3)">VS</div>
-      <div style="text-align:center">
-        <div id="result-team-b-name" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;margin-bottom:8px"></div>
-        <input type="number" min="0" id="result-score-b" class="form-input" style="width:70px;text-align:center;font-family:'Bebas Neue';font-size:28px;padding:8px" value="0">
-      </div>
+      <div style="text-align:center"><div id="result-team-b-name" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;margin-bottom:8px"></div><input type="number" min="0" id="result-score-b" class="form-input" style="width:70px;text-align:center;font-family:'Bebas Neue';font-size:28px;padding:8px" value="0"></div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modal-result')">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveResult()">Guardar resultado</button>
-    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-result')">Cancelar</button><button class="btn btn-primary" onclick="saveResult()">Guardar resultado</button></div>
   </div>
 </div>
 
-<!-- MODAL: NUEVO USUARIO -->
-<div class="modal-overlay" id="modal-new-user">
-  <div class="modal" style="max-width:440px">
-    <div class="modal-title">NUEVO <span>USUARIO</span></div>
-    <div class="form-group">
-      <label class="form-label">Email</label>
-      <input class="form-input" type="email" id="new-user-email" placeholder="jugador@mail.com">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Contraseña inicial</label>
-      <input class="form-input" type="text" id="new-user-password" placeholder="Mínimo 6 caracteres">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Nombre completo</label>
-      <input class="form-input" id="new-user-fullname" placeholder="Juan García">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Rol</label>
-      <select class="form-input" id="new-user-role">
-        <option value="player">Jugador</option>
-        <option value="admin">Admin</option>
-      </select>
-    </div>
-    <div class="form-group" id="new-user-team-group">
-      <label class="form-label">Vincular a equipo</label>
-      <select class="form-input" id="new-user-team">
-        <option value="">Sin equipo asignado</option>
-      </select>
-    </div>
-    <div class="form-group" id="new-user-player-group" style="display:none">
-      <label class="form-label">Vincular a jugador</label>
-      <select class="form-input" id="new-user-player">
-        <option value="">Sin jugador asignado</option>
-      </select>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modal-new-user')">Cancelar</button>
-      <button class="btn btn-primary" onclick="createUser()">Crear usuario</button>
-    </div>
+<div class="modal-overlay" id="modal-link-user">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-title">VINCULAR <span>USUARIO</span></div>
+    <div id="link-user-info" style="color:var(--text2);font-size:14px;margin-bottom:20px"></div>
+    <div class="form-group"><label class="form-label">Equipo</label><select class="form-input" id="link-user-team" onchange="populateLinkPlayerSelect()"><option value="">Sin equipo asignado</option></select></div>
+    <div class="form-group"><label class="form-label">Jugador</label><select class="form-input" id="link-user-player"><option value="">Sin jugador asignado</option></select></div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-link-user')">Cancelar</button><button class="btn btn-primary" onclick="saveLinkUser()">Vincular</button></div>
   </div>
 </div>
 
 <script>
-// ============================================================
-// SUPABASE INIT
-// ============================================================
 const SUPABASE_URL = 'https://ofvlnnrxiwqrxzzclkcc.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mdmxubnJ4aXdxcnh6emNsa2NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzOTA1MjEsImV4cCI6MjA4OTk2NjUyMX0.NDBXNfFaIM7AHfvrG7rrk3NiYkUDXiKo8QBKhOnbImY';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ============================================================
-// STATE
-// ============================================================
-let currentUser = null;
-let currentProfile = null;
-let teamsCache = [];
-let playersCache = [];
-let tournamentsCache = [];
-let presenceCache = {};
-let activeTournament = null;
-let currentTeamId = null;
-let currentMatchRef = null;
-let editingTournamentId = null;
-let currentPresenceWeek = 1;
-let editingTeamLogoB64 = null;
-let playerRowCount = 0;
+let currentUser=null,currentProfile=null,teamsCache=[],playersCache=[],tournamentsCache=[],activeTournament=null;
+let currentTeamId=null,currentMatchRef=null,editingTournamentId=null,linkingUserId=null;
+let currentPresenceWeek=1,editingTeamLogoB64=null,playerRowCount=0;
 
-function isAdmin() { return currentProfile?.role === 'admin'; }
-function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+function isAdmin(){return currentProfile?.role==='admin';}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
 
-// ============================================================
-// TOAST
-// ============================================================
-function toast(msg, type='success') {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast show ' + type;
-  setTimeout(() => el.classList.remove('show'), 3000);
+function toast(msg,type='success'){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show '+type;setTimeout(()=>el.classList.remove('show'),3500);}
+
+function switchAuthTab(tab){
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('panel-login').classList.toggle('active',tab==='login');
+  document.getElementById('panel-register').classList.toggle('active',tab==='register');
 }
+function showAuthMsg(id,msg,type){const el=document.getElementById(id);el.textContent=msg;el.className='auth-msg show '+type;}
+function hideAuthMsg(id){document.getElementById(id).classList.remove('show');}
 
-// ============================================================
-// AUTH
-// ============================================================
-async function doLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const pass = document.getElementById('login-password').value;
-  const errEl = document.getElementById('auth-error');
-  const btn = document.getElementById('login-btn');
-  errEl.classList.remove('show');
-  btn.textContent = 'Entrando...';
-  btn.disabled = true;
-  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
-  if (error) {
-    errEl.textContent = 'Email o contraseña incorrectos.';
-    errEl.classList.add('show');
-    btn.textContent = 'Entrar';
-    btn.disabled = false;
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-password').value;
+  hideAuthMsg('login-msg');
+  const btn=document.getElementById('login-btn');btn.textContent='Entrando...';btn.disabled=true;
+  const{error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){showAuthMsg('login-msg','Email o contraseña incorrectos.','error');btn.textContent='Entrar';btn.disabled=false;}
+}
+document.getElementById('login-password').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+async function doRegister(){
+  const name=document.getElementById('reg-name').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const pass=document.getElementById('reg-password').value;
+  const pass2=document.getElementById('reg-password2').value;
+  hideAuthMsg('register-msg');
+  if(!name){showAuthMsg('register-msg','Ingresá tu nombre completo.','error');return;}
+  if(!email){showAuthMsg('register-msg','Ingresá tu email.','error');return;}
+  if(pass.length<6){showAuthMsg('register-msg','La contraseña debe tener al menos 6 caracteres.','error');return;}
+  if(pass!==pass2){showAuthMsg('register-msg','Las contraseñas no coinciden.','error');return;}
+  const btn=document.getElementById('register-btn');btn.textContent='Enviando...';btn.disabled=true;
+  const{data,error}=await sb.auth.signUp({email,password:pass,options:{data:{full_name:name}}});
+  if(error){showAuthMsg('register-msg','Error: '+error.message,'error');btn.textContent='Solicitar acceso';btn.disabled=false;return;}
+  if(data?.user){
+    await sb.from('profiles').upsert({id:data.user.id,email,full_name:name,role:'player',status:'pending'});
+    try{
+      await fetch(SUPABASE_URL+'/functions/v1/notify-registration',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_ANON_KEY},
+        body:JSON.stringify({user_email:email,user_name:name})
+      });
+    }catch(e){}
   }
+  showAuthMsg('register-msg','✅ Solicitud enviada. Revisá tu mail — te avisaremos cuando el admin apruebe tu cuenta.','success');
+  btn.textContent='Solicitar acceso';btn.disabled=false;
+  ['reg-name','reg-email','reg-password','reg-password2'].forEach(id=>document.getElementById(id).value='');
 }
 
-async function doLogout() {
-  await sb.auth.signOut();
-}
+async function doLogout(){await sb.auth.signOut();}
 
-document.getElementById('login-password').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doLogin();
-});
-
-sb.auth.onAuthStateChange(async (event, session) => {
-  if (session?.user) {
-    currentUser = session.user;
-    await loadProfile();
-    await initApp();
-    document.getElementById('auth-screen').style.display = 'none';
-    const appEl = document.getElementById('app-screen');
-    appEl.style.display = 'flex';
-    appEl.classList.add('show');
-  } else {
-    currentUser = null;
-    currentProfile = null;
-    document.getElementById('auth-screen').style.display = 'flex';
-    document.getElementById('app-screen').style.display = 'none';
-    document.getElementById('app-screen').classList.remove('show');
+sb.auth.onAuthStateChange(async(event,session)=>{
+  const authEl=document.getElementById('auth-screen');
+  const appEl=document.getElementById('app-screen');
+  const pendEl=document.getElementById('pending-screen');
+  authEl.style.display='none';appEl.style.display='none';appEl.classList.remove('show');pendEl.style.display='none';
+  if(!session?.user){authEl.style.display='flex';return;}
+  currentUser=session.user;
+  const{data:profile}=await sb.from('profiles').select('*').eq('id',currentUser.id).single();
+  currentProfile=profile;
+  if(!profile||profile.status==='pending'){
+    document.getElementById('pending-icon').textContent='⏳';
+    document.getElementById('pending-title').textContent='CUENTA PENDIENTE';
+    document.getElementById('pending-text').textContent='Tu solicitud fue enviada correctamente.\n\nEl admin revisará tu cuenta y recibirás un mail cuando sea aprobada.';
+    pendEl.style.display='flex';return;
   }
-});
-
-async function loadProfile() {
-  const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
-  currentProfile = data;
-  document.getElementById('sb-user-name').textContent = data?.full_name || currentUser.email.split('@')[0];
-  document.getElementById('sb-user-email').textContent = currentUser.email;
-  const roleEl = document.getElementById('sb-user-role');
-  roleEl.textContent = data?.role === 'admin' ? 'Admin' : 'Jugador';
-  roleEl.className = 'user-role ' + (data?.role === 'admin' ? 'role-admin' : 'role-player');
-  // Show admin nav
-  document.querySelectorAll('.admin-only').forEach(el => {
-    el.style.display = isAdmin() ? 'flex' : 'none';
-  });
-}
-
-// ============================================================
-// INIT
-// ============================================================
-async function initApp() {
+  if(profile.status==='rejected'){
+    document.getElementById('pending-icon').textContent='🚫';
+    document.getElementById('pending-title').textContent='ACCESO DENEGADO';
+    document.getElementById('pending-text').textContent='Tu solicitud no fue aprobada. Contactá al administrador del torneo.';
+    pendEl.style.display='flex';return;
+  }
+  document.getElementById('sb-user-name').textContent=profile.full_name||currentUser.email.split('@')[0];
+  document.getElementById('sb-user-email').textContent=currentUser.email;
+  const roleEl=document.getElementById('sb-user-role');
+  roleEl.textContent=profile.role==='admin'?'Admin':'Jugador';
+  roleEl.className='user-role '+(profile.role==='admin'?'role-admin':'role-player');
+  document.querySelectorAll('.admin-only').forEach(el=>el.style.display=isAdmin()?'flex':'none');
+  appEl.style.display='flex';appEl.classList.add('show');
   await loadAll();
-  if (isAdmin()) {
-    showPage('dashboard');
-  } else {
-    showPage('presencia');
-  }
-}
-
-async function loadAll() {
-  const [teamsRes, playersRes, tournamentsRes] = await Promise.all([
-    sb.from('teams').select('*').order('created_at'),
-    sb.from('players').select('*').order('name'),
-    sb.from('tournaments').select('*').order('created_at')
-  ]);
-  teamsCache = teamsRes.data || [];
-  playersCache = playersRes.data || [];
-  tournamentsCache = tournamentsRes.data || [];
-  activeTournament = tournamentsCache.find(t => t.is_active) || tournamentsCache[tournamentsCache.length - 1] || null;
-}
-
-// ============================================================
-// PAGES
-// ============================================================
-function showPage(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  const page = document.getElementById('page-' + name);
-  if (page) page.classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b => {
-    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + name + "'")) b.classList.add('active');
-  });
-  if (name === 'dashboard') renderDashboard();
-  if (name === 'equipos') renderTeams();
-  if (name === 'presencia') renderPresence();
-  if (name === 'torneo') renderTorneo();
-  if (name === 'fixture') renderFixture();
-  if (name === 'compromiso') renderCompromiso();
-  if (name === 'usuarios') renderUsuarios();
-}
-
-// ============================================================
-// MODALS
-// ============================================================
-function openModal(id) {
-  document.getElementById(id).classList.add('open');
-  if (id === 'modal-new-team') resetNewTeamModal();
-  if (id === 'modal-new-tournament') renderTournamentTeamSelect();
-  if (id === 'modal-new-user') populateUserModal();
-}
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-overlay').forEach(m => {
-  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+  if(isAdmin()){showPage('dashboard');checkPendingBadge();}
+  else showPage('presencia');
 });
 
-// ============================================================
-// LOGO UPLOAD
-// ============================================================
-function previewLogo(input) {
-  const file = input.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    editingTeamLogoB64 = e.target.result;
-    document.getElementById('team-logo-preview').src = e.target.result;
-    document.getElementById('team-logo-preview').style.display = 'block';
-    document.getElementById('team-logo-placeholder').style.display = 'none';
-  };
+async function loadAll(){
+  const[t,p,to]=await Promise.all([sb.from('teams').select('*').order('created_at'),sb.from('players').select('*').order('name'),sb.from('tournaments').select('*').order('created_at')]);
+  teamsCache=t.data||[];playersCache=p.data||[];tournamentsCache=to.data||[];
+  activeTournament=tournamentsCache.find(x=>x.is_active)||tournamentsCache[tournamentsCache.length-1]||null;
+}
+
+async function checkPendingBadge(){
+  const{data}=await sb.from('profiles').select('id').eq('status','pending');
+  const count=data?.length||0;
+  const badge=document.getElementById('pending-badge');
+  if(count>0){badge.textContent=count;badge.style.display='inline';}else badge.style.display='none';
+}
+
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const page=document.getElementById('page-'+name);if(page)page.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+name+"'"))b.classList.add('active');});
+  if(name==='dashboard')renderDashboard();
+  if(name==='equipos')renderTeams();
+  if(name==='presencia')renderPresence();
+  if(name==='torneo')renderTorneo();
+  if(name==='fixture')renderFixture();
+  if(name==='compromiso')renderCompromiso();
+  if(name==='usuarios')renderUsuarios();
+}
+
+function openModal(id){document.getElementById(id).classList.add('open');if(id==='modal-new-team')resetNewTeamModal();if(id==='modal-new-tournament')renderTournamentTeamSelect();}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+
+function previewLogo(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{editingTeamLogoB64=e.target.result;const img=document.getElementById('team-logo-preview');img.src=e.target.result;img.style.display='block';document.getElementById('team-logo-placeholder').style.display='none';};
   reader.readAsDataURL(file);
 }
 
-// ============================================================
-// TEAMS
-// ============================================================
-function resetNewTeamModal() {
-  document.getElementById('team-name-input').value = '';
-  document.getElementById('team-color-input').value = '#00e676';
-  document.getElementById('team-logo-preview').style.display = 'none';
-  document.getElementById('team-logo-placeholder').style.display = '';
-  document.getElementById('players-add-list').innerHTML = '';
-  playerRowCount = 0; editingTeamLogoB64 = null;
-  addPlayerRow(); addPlayerRow();
+function resetNewTeamModal(){
+  document.getElementById('team-name-input').value='';document.getElementById('team-color-input').value='#00e676';
+  document.getElementById('team-logo-preview').style.display='none';document.getElementById('team-logo-placeholder').style.display='';
+  document.getElementById('players-add-list').innerHTML='';playerRowCount=0;editingTeamLogoB64=null;addPlayerRow();addPlayerRow();
 }
 
-function addPlayerRow() {
-  playerRowCount++;
-  const n = playerRowCount;
-  const div = document.createElement('div');
-  div.className = 'form-row'; div.style.marginBottom = '8px'; div.id = 'pr-' + n;
-  div.innerHTML = `
-    <div class="form-group" style="margin:0"><input class="form-input" placeholder="Nombre" id="pn-${n}"></div>
-    <div class="form-group" style="margin:0;display:flex;gap:6px">
-      <select class="form-input" id="pp-${n}" style="flex:1">
-        <option value="">Posición</option>
-        <option>Arquero</option><option>Defensor</option><option>Volante</option><option>Delantero</option>
-      </select>
-      <button class="btn btn-icon btn-danger" onclick="document.getElementById('pr-${n}').remove()">✕</button>
-    </div>`;
+function addPlayerRow(){
+  playerRowCount++;const n=playerRowCount;const div=document.createElement('div');div.className='form-row';div.style.marginBottom='8px';div.id='pr-'+n;
+  div.innerHTML=`<div class="form-group" style="margin:0"><input class="form-input" placeholder="Nombre" id="pn-${n}"></div><div class="form-group" style="margin:0;display:flex;gap:6px"><select class="form-input" id="pp-${n}" style="flex:1"><option value="">Posición</option><option>Arquero</option><option>Defensor</option><option>Volante</option><option>Delantero</option></select><button class="btn btn-icon btn-danger" onclick="document.getElementById('pr-${n}').remove()">✕</button></div>`;
   document.getElementById('players-add-list').appendChild(div);
 }
 
-async function saveTeam() {
-  const name = document.getElementById('team-name-input').value.trim();
-  if (!name) { toast('Ingresá un nombre para el equipo', 'error'); return; }
-  const teamId = uid();
-  const players = [];
-  document.querySelectorAll('[id^="pn-"]').forEach(inp => {
-    const n = inp.id.replace('pn-', '');
-    const pname = inp.value.trim();
-    const pos = document.getElementById('pp-' + n)?.value || '';
-    if (pname) players.push({ id: uid(), team_id: teamId, name: pname, position: pos });
-  });
-  const { error: te } = await sb.from('teams').insert({
-    id: teamId, name,
-    color: document.getElementById('team-color-input').value,
-    logo: editingTeamLogoB64 || null
-  });
-  if (te) { toast('Error al guardar equipo', 'error'); return; }
-  if (players.length) await sb.from('players').insert(players);
-  toast('Equipo guardado ✓');
-  closeModal('modal-new-team');
-  await loadAll(); renderTeams(); renderDashboard();
+async function saveTeam(){
+  const name=document.getElementById('team-name-input').value.trim();
+  if(!name){toast('Ingresá un nombre para el equipo','error');return;}
+  const teamId=uid();const players=[];
+  document.querySelectorAll('[id^="pn-"]').forEach(inp=>{const n=inp.id.replace('pn-','');const pname=inp.value.trim();if(pname)players.push({id:uid(),team_id:teamId,name:pname,position:document.getElementById('pp-'+n)?.value||''});});
+  const{error}=await sb.from('teams').insert({id:teamId,name,color:document.getElementById('team-color-input').value,logo:editingTeamLogoB64||null});
+  if(error){toast('Error al guardar equipo','error');return;}
+  if(players.length)await sb.from('players').insert(players);
+  toast('Equipo guardado ✓');closeModal('modal-new-team');await loadAll();renderTeams();renderDashboard();
 }
 
-function teamLogoHTML(teamId, size = 32) {
-  const t = teamsCache.find(x => x.id === teamId);
-  if (!t) return `<div class="team-mini-logo" style="width:${size}px;height:${size}px">⚽</div>`;
-  return `<div class="team-mini-logo" style="width:${size}px;height:${size}px">${t.logo ? `<img src="${t.logo}">` : '⚽'}</div>`;
+function teamLogoHTML(teamId,size=32){const t=teamsCache.find(x=>x.id===teamId);return `<div class="team-mini-logo" style="width:${size}px;height:${size}px">${t?.logo?`<img src="${t.logo}">`:'⚽'}</div>`;}
+
+function renderTeams(){
+  const grid=document.getElementById('teams-grid');
+  if(!teamsCache.length){grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="icon">🛡️</div><p>No hay equipos. Creá el primero.</p></div>`;return;}
+  grid.innerHTML=teamsCache.map(t=>{const count=playersCache.filter(p=>p.team_id===t.id).length;return `<div class="team-card"><div class="team-logo-wrap">${t.logo?`<img src="${t.logo}">`:'⚽'}</div><div class="team-name-el">${t.name}</div><div class="team-count">${count} jugador${count!==1?'es':''}</div><div class="team-card-actions"><button class="btn btn-secondary btn-sm" onclick="viewTeam('${t.id}')">👥 Plantel</button>${isAdmin()?`<button class="btn btn-danger btn-sm" onclick="deleteTeam('${t.id}')">Eliminar</button>`:''}</div></div>`;}).join('');
 }
 
-function renderTeams() {
-  const grid = document.getElementById('teams-grid');
-  if (!teamsCache.length) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="icon">🛡️</div><p>No hay equipos. Creá el primero.</p></div>`;
-    return;
-  }
-  grid.innerHTML = teamsCache.map(t => {
-    const count = playersCache.filter(p => p.team_id === t.id).length;
-    return `<div class="team-card">
-      <div class="team-logo-wrap">${t.logo ? `<img src="${t.logo}">` : '⚽'}</div>
-      <div class="team-name">${t.name}</div>
-      <div class="team-count">${count} jugador${count !== 1 ? 'es' : ''}</div>
-      <div class="team-card-actions">
-        <button class="btn btn-secondary btn-sm" onclick="viewTeam('${t.id}')">👥 Plantel</button>
-        ${isAdmin() ? `<button class="btn btn-danger btn-sm" onclick="deleteTeam('${t.id}')">Eliminar</button>` : ''}
-      </div>
-    </div>`;
-  }).join('');
+async function deleteTeam(id){if(!confirm('¿Eliminar este equipo?'))return;await sb.from('teams').delete().eq('id',id);toast('Equipo eliminado');await loadAll();renderTeams();}
+
+async function viewTeam(id){
+  currentTeamId=id;const t=teamsCache.find(x=>x.id===id);
+  document.getElementById('modal-team-title').textContent=t.name;
+  document.getElementById('modal-team-logo').innerHTML=t.logo?`<img src="${t.logo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:'⚽';
+  renderModalPlayers();openModal('modal-view-team');
 }
 
-async function deleteTeam(id) {
-  if (!confirm('¿Eliminar este equipo?')) return;
-  await sb.from('teams').delete().eq('id', id);
-  toast('Equipo eliminado');
-  await loadAll(); renderTeams();
+function renderModalPlayers(){
+  const players=playersCache.filter(p=>p.team_id===currentTeamId);
+  document.getElementById('modal-team-count').textContent=players.length+' jugadores';
+  const list=document.getElementById('modal-players-list');
+  if(!players.length){list.innerHTML='<p style="color:var(--text3);font-size:13px">Sin jugadores.</p>';return;}
+  list.innerHTML=players.map((p,i)=>`<div class="player-row"><div class="player-num">${i+1}</div><div class="player-name-text">${p.name}</div>${p.position?`<div class="player-pos">${p.position}</div>`:''} ${p.email?`<div style="font-size:11px;color:var(--text3)">${p.email}</div>`:''} ${isAdmin()?`<button class="btn btn-icon btn-danger" onclick="removePlayer('${p.id}')">✕</button>`:''}</div>`).join('');
 }
 
-async function viewTeam(id) {
-  currentTeamId = id;
-  const t = teamsCache.find(x => x.id === id);
-  document.getElementById('modal-team-title').textContent = t.name;
-  const players = playersCache.filter(p => p.team_id === id);
-  document.getElementById('modal-team-count').textContent = players.length + ' jugadores';
-  const logoEl = document.getElementById('modal-team-logo');
-  logoEl.innerHTML = t.logo ? `<img src="${t.logo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : '⚽';
-  renderModalPlayers();
-  openModal('modal-view-team');
+async function addPlayerToTeam(){
+  const name=document.getElementById('add-player-name').value.trim();if(!name)return;
+  const{error}=await sb.from('players').insert({id:uid(),team_id:currentTeamId,name,position:document.getElementById('add-player-pos').value,email:document.getElementById('add-player-email').value.trim()||null});
+  if(error){toast('Error','error');return;}
+  document.getElementById('add-player-name').value='';document.getElementById('add-player-pos').value='';document.getElementById('add-player-email').value='';
+  await loadAll();renderModalPlayers();renderTeams();
+}
+async function removePlayer(pid){await sb.from('players').delete().eq('id',pid);await loadAll();renderModalPlayers();}
+
+function renderTournamentTeamSelect(){
+  const c=document.getElementById('tournament-team-select');
+  if(!teamsCache.length){c.innerHTML='<p style="color:var(--text3);font-size:13px">No hay equipos.</p>';return;}
+  c.innerHTML=teamsCache.map(t=>`<label class="team-check-item selected" id="tci-${t.id}"><input type="checkbox" value="${t.id}" checked onchange="toggleTeamCheck('${t.id}')"><div class="check-icon" id="ci-${t.id}">✓</div><span class="check-team-name">${t.name}</span></label>`).join('');
+}
+function toggleTeamCheck(id){const el=document.getElementById('tci-'+id),ci=document.getElementById('ci-'+id),inp=el.querySelector('input');if(inp.checked){el.classList.add('selected');ci.textContent='✓';}else{el.classList.remove('selected');ci.textContent='';}}
+
+function generateRoundRobin(teamIds,vueltas){
+  vueltas=vueltas||1;const teams=[...teamIds];if(teams.length%2!==0)teams.push('BYE');
+  const n=teams.length,rounds=n-1,all=[];
+  for(let v=0;v<vueltas;v++){const t=[...teams];for(let r=0;r<rounds;r++){const week=[];for(let i=0;i<n/2;i++){let a=t[i],b=t[n-1-i];if(v%2===1){const tmp=a;a=b;b=tmp;}if(a!=='BYE'&&b!=='BYE')week.push({id:uid(),teamA:a,teamB:b,scoreA:null,scoreB:null,played:false,postponed:false});}all.push({week:all.length+1,matches:week,dateLabel:null});const last=t.pop();t.splice(1,0,last);}}
+  return all;
 }
 
-function renderModalPlayers() {
-  const players = playersCache.filter(p => p.team_id === currentTeamId);
-  const list = document.getElementById('modal-players-list');
-  if (!players.length) { list.innerHTML = '<p style="color:var(--text3);font-size:13px">Sin jugadores.</p>'; return; }
-  list.innerHTML = players.map((p, i) => `
-    <div class="player-row">
-      <div class="player-num">${i + 1}</div>
-      <div class="player-name-text">${p.name}</div>
-      ${p.position ? `<div class="player-pos">${p.position}</div>` : ''}
-      ${p.email ? `<div style="font-size:11px;color:var(--text3)">${p.email}</div>` : ''}
-      ${isAdmin() ? `<button class="btn btn-icon btn-danger" onclick="removePlayer('${p.id}')">✕</button>` : ''}
-    </div>`).join('');
+async function saveTournament(){
+  const name=document.getElementById('tournament-name-input').value.trim();if(!name){toast('Ingresá un nombre','error');return;}
+  const startDate=document.getElementById('tournament-start-date').value;const day=parseInt(document.getElementById('tournament-day').value);const vueltas=parseInt(document.getElementById('tournament-vueltas').value)||1;
+  const selected=[];document.querySelectorAll('#tournament-team-select input:checked').forEach(cb=>selected.push(cb.value));
+  if(selected.length<2){toast('Seleccioná al menos 2 equipos','error');return;}
+  const schedule=generateRoundRobin(selected,vueltas);let d=startDate?new Date(startDate+'T12:00:00'):new Date();
+  if(startDate){while(d.getDay()!==day)d.setDate(d.getDate()+1);}
+  schedule.forEach(w=>{w.dateLabel=d.toLocaleDateString('es-AR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});d.setDate(d.getDate()+7);});
+  await sb.from('tournaments').update({is_active:false}).neq('id','none');
+  const{error}=await sb.from('tournaments').insert({id:uid(),name,team_ids:selected,schedule,vueltas,is_active:true});
+  if(error){toast('Error al crear torneo','error');return;}
+  toast('Torneo creado ✓');closeModal('modal-new-tournament');await loadAll();renderDashboard();showPage('fixture');
 }
 
-async function addPlayerToTeam() {
-  const name = document.getElementById('add-player-name').value.trim();
-  if (!name) return;
-  const player = {
-    id: uid(), team_id: currentTeamId, name,
-    position: document.getElementById('add-player-pos').value,
-    email: document.getElementById('add-player-email').value.trim() || null
-  };
-  const { error } = await sb.from('players').insert(player);
-  if (error) { toast('Error al agregar jugador', 'error'); return; }
-  document.getElementById('add-player-name').value = '';
-  document.getElementById('add-player-pos').value = '';
-  document.getElementById('add-player-email').value = '';
-  await loadAll();
-  renderModalPlayers();
-  document.getElementById('modal-team-count').textContent = playersCache.filter(p => p.team_id === currentTeamId).length + ' jugadores';
-  renderTeams();
-}
-
-async function removePlayer(pid) {
-  await sb.from('players').delete().eq('id', pid);
-  await loadAll(); renderModalPlayers();
-}
-
-// ============================================================
-// TOURNAMENTS
-// ============================================================
-function renderTournamentTeamSelect() {
-  const container = document.getElementById('tournament-team-select');
-  if (!teamsCache.length) { container.innerHTML = '<p style="color:var(--text3);font-size:13px">No hay equipos. Creá equipos primero.</p>'; return; }
-  container.innerHTML = teamsCache.map(t => `
-    <label class="team-check-item selected" id="tci-${t.id}">
-      <input type="checkbox" value="${t.id}" checked onchange="toggleTeamCheck('${t.id}')">
-      <div class="check-icon" id="ci-${t.id}">✓</div>
-      <span class="check-team-name">${t.name}</span>
-    </label>`).join('');
-}
-
-function toggleTeamCheck(id) {
-  const el = document.getElementById('tci-' + id);
-  const ci = document.getElementById('ci-' + id);
-  const inp = el.querySelector('input');
-  if (inp.checked) { el.classList.add('selected'); ci.textContent = '✓'; }
-  else { el.classList.remove('selected'); ci.textContent = ''; }
-}
-
-function generateRoundRobin(teamIds, vueltas) {
-  vueltas = vueltas || 1;
-  const teams = [...teamIds];
-  if (teams.length % 2 !== 0) teams.push('BYE');
-  const n = teams.length; const rounds = n - 1;
-  const allMatches = [];
-  for (let v = 0; v < vueltas; v++) {
-    const t = [...teams];
-    for (let r = 0; r < rounds; r++) {
-      const week = [];
-      for (let i = 0; i < n / 2; i++) {
-        let a = t[i], b = t[n - 1 - i];
-        if (v % 2 === 1) { const tmp = a; a = b; b = tmp; }
-        if (a !== 'BYE' && b !== 'BYE') week.push({ id: uid(), teamA: a, teamB: b, scoreA: null, scoreB: null, played: false, postponed: false });
-      }
-      allMatches.push({ week: allMatches.length + 1, matches: week, dateLabel: null });
-      const last = t.pop(); t.splice(1, 0, last);
-    }
-  }
-  return allMatches;
-}
-
-async function saveTournament() {
-  const name = document.getElementById('tournament-name-input').value.trim();
-  if (!name) { toast('Ingresá un nombre', 'error'); return; }
-  const startDate = document.getElementById('tournament-start-date').value;
-  const day = parseInt(document.getElementById('tournament-day').value);
-  const vueltas = parseInt(document.getElementById('tournament-vueltas').value) || 1;
-  const selected = [];
-  document.querySelectorAll('#tournament-team-select input:checked').forEach(cb => selected.push(cb.value));
-  if (selected.length < 2) { toast('Seleccioná al menos 2 equipos', 'error'); return; }
-
-  const schedule = generateRoundRobin(selected, vueltas);
-  let d = startDate ? new Date(startDate + 'T12:00:00') : new Date();
-  if (startDate) { while (d.getDay() !== day) d.setDate(d.getDate() + 1); }
-  schedule.forEach(week => {
-    week.dateLabel = d.toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    d.setDate(d.getDate() + 7);
-  });
-
-  // Deactivate others
-  await sb.from('tournaments').update({ is_active: false }).neq('id', 'none');
-
-  const { error } = await sb.from('tournaments').insert({
-    id: uid(), name, team_ids: selected, schedule, vueltas, is_active: true
-  });
-  if (error) { toast('Error al crear torneo', 'error'); return; }
-  toast('Torneo creado ✓');
-  closeModal('modal-new-tournament');
-  await loadAll(); renderDashboard(); showPage('fixture');
-}
-
-function openEditTournament(id) {
-  editingTournamentId = id;
-  const t = tournamentsCache.find(x => x.id === id);
-  document.getElementById('edit-tournament-name').value = t.name;
-  document.getElementById('edit-tournament-vueltas').value = '';
-  document.getElementById('edit-vueltas-info').textContent =
-    'Actualmente: ' + (t.vueltas || 1) + ' vuelta' + ((t.vueltas || 1) !== 1 ? 's' : '') + ' · ' + t.schedule.length + ' fechas';
+function openEditTournament(id){
+  editingTournamentId=id;const t=tournamentsCache.find(x=>x.id===id);
+  document.getElementById('edit-tournament-name').value=t.name;document.getElementById('edit-tournament-vueltas').value='';
+  document.getElementById('edit-vueltas-info').textContent='Actualmente: '+(t.vueltas||1)+' vuelta'+((t.vueltas||1)!==1?'s':'')+' · '+(t.schedule||[]).length+' fechas';
   openModal('modal-edit-tournament');
 }
 
-async function saveEditTournament() {
-  const t = tournamentsCache.find(x => x.id === editingTournamentId);
-  if (!t) { toast('Torneo no encontrado', 'error'); return; }
-  const newName = document.getElementById('edit-tournament-name').value.trim();
-  if (!newName) { toast('Ingresá un nombre', 'error'); return; }
-  const vueltasVal = document.getElementById('edit-tournament-vueltas').value;
-  const newVueltas = parseInt(vueltasVal);
-  let updateData = { name: newName };
-
-  if (vueltasVal !== '' && !isNaN(newVueltas) && newVueltas >= 1 && newVueltas !== (t.vueltas || 1)) {
-    if (!confirm('¿Regenerar el fixture con ' + newVueltas + ' vuelta' + (newVueltas !== 1 ? 's' : '') + '?\nSe perderán los resultados.')) return;
-    await sb.from('presence').delete().eq('tournament_id', t.id);
-    const newSchedule = generateRoundRobin(t.team_ids, newVueltas);
-    newSchedule.forEach((week, i) => {
-      week.dateLabel = (t.schedule[i] && t.schedule[i].dateLabel) ? t.schedule[i].dateLabel : 'Fecha ' + week.week;
-    });
-    updateData.schedule = newSchedule;
-    updateData.vueltas = newVueltas;
+async function saveEditTournament(){
+  const t=tournamentsCache.find(x=>x.id===editingTournamentId);if(!t){toast('Torneo no encontrado','error');return;}
+  const newName=document.getElementById('edit-tournament-name').value.trim();if(!newName){toast('Ingresá un nombre','error');return;}
+  const vueltasVal=document.getElementById('edit-tournament-vueltas').value;const newVueltas=parseInt(vueltasVal);let upd={name:newName};
+  if(vueltasVal!==''&&!isNaN(newVueltas)&&newVueltas>=1&&newVueltas!==(t.vueltas||1)){
+    if(!confirm('¿Regenerar el fixture con '+newVueltas+' vuelta'+(newVueltas!==1?'s':'')+'?\nSe perderán los resultados.'))return;
+    await sb.from('presence').delete().eq('tournament_id',t.id);
+    const newSchedule=generateRoundRobin(t.team_ids,newVueltas);
+    newSchedule.forEach((w,i)=>{w.dateLabel=(t.schedule[i]&&t.schedule[i].dateLabel)?t.schedule[i].dateLabel:'Fecha '+w.week;});
+    upd.schedule=newSchedule;upd.vueltas=newVueltas;
   }
-
-  const { error } = await sb.from('tournaments').update(updateData).eq('id', editingTournamentId);
-  if (error) { toast('Error al guardar cambios', 'error'); return; }
-  toast('Torneo actualizado ✓');
-  closeModal('modal-edit-tournament');
-  await loadAll(); renderTorneo(); renderFixture(); renderDashboard();
+  const{error}=await sb.from('tournaments').update(upd).eq('id',editingTournamentId);
+  if(error){toast('Error al guardar','error');return;}
+  toast('Torneo actualizado ✓');closeModal('modal-edit-tournament');await loadAll();renderTorneo();renderFixture();renderDashboard();
 }
 
-async function deleteTournament(id) {
-  const t = tournamentsCache.find(x => x.id === id);
-  if (!confirm('¿Eliminar el torneo "' + t.name + '"?\nSe borrarán todos los registros vinculados.')) return;
-  await sb.from('presence').delete().eq('tournament_id', id);
-  await sb.from('tournaments').delete().eq('id', id);
-  toast('Torneo eliminado');
-  await loadAll(); renderTorneo(); renderDashboard();
+async function deleteTournament(id){
+  const t=tournamentsCache.find(x=>x.id===id);if(!confirm('¿Eliminar el torneo "'+t.name+'"?\nSe borrarán todos los registros vinculados.'))return;
+  await sb.from('presence').delete().eq('tournament_id',id);await sb.from('tournaments').delete().eq('id',id);
+  toast('Torneo eliminado');await loadAll();renderTorneo();renderDashboard();
 }
 
-async function setActiveTournament(id) {
-  await sb.from('tournaments').update({ is_active: false }).neq('id', 'none');
-  await sb.from('tournaments').update({ is_active: true }).eq('id', id);
-  await loadAll();
-  activeTournament = tournamentsCache.find(t => t.id === id);
-  renderTorneo(); renderDashboard();
+async function setActiveTournament(id){
+  await sb.from('tournaments').update({is_active:false}).neq('id','none');await sb.from('tournaments').update({is_active:true}).eq('id',id);
+  await loadAll();activeTournament=tournamentsCache.find(t=>t.id===id);renderTorneo();renderDashboard();
 }
 
-// ============================================================
-// STANDINGS
-// ============================================================
-function computeStandings(t) {
-  if (!t) return [];
-  const stats = {};
-  (t.team_ids || []).forEach(id => { stats[id] = { pj: 0, pts: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0 }; });
-  (t.schedule || []).forEach(week => {
-    week.matches.forEach(m => {
-      if (!m.played || !stats[m.teamA] || !stats[m.teamB]) return;
-      const sa = m.scoreA, sb2 = m.scoreB;
-      stats[m.teamA].pj++; stats[m.teamB].pj++;
-      stats[m.teamA].gf += sa; stats[m.teamA].gc += sb2;
-      stats[m.teamB].gf += sb2; stats[m.teamB].gc += sa;
-      if (sa > sb2) { stats[m.teamA].pg++; stats[m.teamA].pts += 3; stats[m.teamB].pp++; }
-      else if (sa < sb2) { stats[m.teamB].pg++; stats[m.teamB].pts += 3; stats[m.teamA].pp++; }
-      else { stats[m.teamA].pe++; stats[m.teamA].pts++; stats[m.teamB].pe++; stats[m.teamB].pts++; }
-    });
-  });
-  return (t.team_ids || []).map(id => ({ id, ...stats[id], dg: stats[id].gf - stats[id].gc }))
-    .sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
+function computeStandings(t){
+  if(!t)return[];const stats={};
+  (t.team_ids||[]).forEach(id=>{stats[id]={pj:0,pts:0,pg:0,pe:0,pp:0,gf:0,gc:0};});
+  (t.schedule||[]).forEach(w=>w.matches.forEach(m=>{
+    if(!m.played||!stats[m.teamA]||!stats[m.teamB])return;
+    stats[m.teamA].pj++;stats[m.teamB].pj++;stats[m.teamA].gf+=m.scoreA;stats[m.teamA].gc+=m.scoreB;stats[m.teamB].gf+=m.scoreB;stats[m.teamB].gc+=m.scoreA;
+    if(m.scoreA>m.scoreB){stats[m.teamA].pg++;stats[m.teamA].pts+=3;stats[m.teamB].pp++;}
+    else if(m.scoreA<m.scoreB){stats[m.teamB].pg++;stats[m.teamB].pts+=3;stats[m.teamA].pp++;}
+    else{stats[m.teamA].pe++;stats[m.teamA].pts++;stats[m.teamB].pe++;stats[m.teamB].pts++;}
+  }));
+  return(t.team_ids||[]).map(id=>({id,...stats[id],dg:stats[id].gf-stats[id].gc})).sort((a,b)=>b.pts-a.pts||b.dg-a.dg||b.gf-a.gf);
 }
 
-function renderTorneo() {
-  // Tournament list
-  const listEl = document.getElementById('tournament-list');
-  const listCard = document.getElementById('tournament-list-card');
-  listCard.style.display = isAdmin() ? 'block' : 'none';
+function renderTorneo(){
+  const listCard=document.getElementById('tournament-list-card');const listEl=document.getElementById('tournament-list');
+  listCard.style.display=isAdmin()?'block':'none';
+  if(isAdmin()){listEl.innerHTML=!tournamentsCache.length?'<p style="color:var(--text3);font-size:13px">No hay torneos.</p>':tournamentsCache.map(t=>{const played=(t.schedule||[]).filter(w=>w.matches.every(m=>m.played)).length;return `<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);flex-wrap:wrap"><div style="flex:1;min-width:160px"><div style="font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">${t.name}${t.is_active?'<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(0,230,118,.12);color:var(--accent);letter-spacing:1px">ACTIVO</span>':''}</div><div style="font-size:12px;color:var(--text3);margin-top:3px">${(t.team_ids||[]).length} equipos · ${t.vueltas||1} vuelta${(t.vueltas||1)!==1?'s':''} · ${(t.schedule||[]).length} fechas · ${played} jugadas</div></div><div style="display:flex;gap:6px;flex-shrink:0">${!t.is_active?`<button class="btn btn-secondary btn-sm" onclick="setActiveTournament('${t.id}')">Activar</button>`:''}<button class="btn btn-secondary btn-sm" onclick="openEditTournament('${t.id}')">✏️ Editar</button><button class="btn btn-danger btn-sm" onclick="deleteTournament('${t.id}')">🗑️ Eliminar</button></div></div>`;}).join('');}
+  const tbody=document.getElementById('standings-body');const rows=computeStandings(activeTournament);
+  if(!rows.length){tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text3)">No hay torneo activo.</td></tr>`;return;}
+  const rc=['gold','silver','bronze'];
+  tbody.innerHTML=rows.map((r,i)=>{const team=teamsCache.find(t=>t.id===r.id);const dgc=r.dg>0?'pos':r.dg<0?'neg':'';return `<tr><td><span class="rank-num ${rc[i]||''}">${i+1}</span></td><td><div class="team-inline">${teamLogoHTML(r.id)}<span style="font-weight:700">${team?.name||'?'}</span></div></td><td>${r.pj}</td><td class="td-pts">${r.pts}</td><td>${r.pg}</td><td>${r.pe}</td><td>${r.pp}</td><td class="td-dg ${dgc}">${r.dg>0?'+':''}${r.dg}</td></tr>`;}).join('');
+}
 
-  if (isAdmin()) {
-    if (!tournamentsCache.length) {
-      listEl.innerHTML = '<p style="color:var(--text3);font-size:13px">No hay torneos creados.</p>';
-    } else {
-      listEl.innerHTML = tournamentsCache.map(t => {
-        const played = (t.schedule || []).filter(w => w.matches.every(m => m.played)).length;
-        return `<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px">
-          <div style="flex:1;min-width:180px">
-            <div style="font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px">
-              ${t.name}
-              ${t.is_active ? '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(0,230,118,.12);color:var(--accent);letter-spacing:1px">ACTIVO</span>' : ''}
-            </div>
-            <div style="font-size:12px;color:var(--text3);margin-top:3px">${(t.team_ids || []).length} equipos · ${t.vueltas || 1} vuelta${(t.vueltas || 1) !== 1 ? 's' : ''} · ${(t.schedule || []).length} fechas · ${played} jugadas</div>
-          </div>
-          <div style="display:flex;gap:6px;flex-shrink:0">
-            ${!t.is_active ? `<button class="btn btn-secondary btn-sm" onclick="setActiveTournament('${t.id}')">Activar</button>` : ''}
-            <button class="btn btn-secondary btn-sm" onclick="openEditTournament('${t.id}')">✏️ Editar</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteTournament('${t.id}')">🗑️ Eliminar</button>
-          </div>
-        </div>`;
-      }).join('');
-    }
-  }
-
-  // Standings table
-  const tbody = document.getElementById('standings-body');
-  const rows = computeStandings(activeTournament);
-  if (!rows.length) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text3)">No hay torneo activo.</td></tr>`;
-    return;
-  }
-  const rankClass = ['gold', 'silver', 'bronze'];
-  tbody.innerHTML = rows.map((r, i) => {
-    const team = teamsCache.find(t => t.id === r.id);
-    const dgClass = r.dg > 0 ? 'pos' : r.dg < 0 ? 'neg' : '';
-    return `<tr>
-      <td><span class="rank-num ${rankClass[i] || ''}">${i + 1}</span></td>
-      <td><div class="team-inline">${teamLogoHTML(r.id)}<span style="font-weight:700">${team?.name || '?'}</span></div></td>
-      <td>${r.pj}</td><td class="td-pts">${r.pts}</td>
-      <td>${r.pg}</td><td>${r.pe}</td><td>${r.pp}</td>
-      <td class="td-dg ${dgClass}">${r.dg > 0 ? '+' : ''}${r.dg}</td>
-    </tr>`;
+function renderFixture(){
+  const c=document.getElementById('fixture-content');
+  if(!activeTournament){c.innerHTML=`<div class="empty-state"><div class="icon">📅</div><p>No hay torneo activo.</p></div>`;return;}
+  c.innerHTML=(activeTournament.schedule||[]).map(week=>{
+    const allPlayed=week.matches.every(m=>m.played);const anyPost=week.matches.some(m=>m.postponed);
+    const sc=allPlayed?'status-played':anyPost?'status-postponed':'status-upcoming';const sl=allPlayed?'Jugado':anyPost?'Postergado':'Próximo';
+    return `<div class="fixture-week"><div class="week-header"><div class="week-label">FECHA ${week.week}</div>${week.dateLabel?`<span style="font-size:12px;color:var(--text3)">${week.dateLabel}</span>`:''}<div class="week-line"></div><span class="week-status ${sc}">${sl}</span></div>${week.matches.map(m=>{const ta=teamsCache.find(t=>t.id===m.teamA),tb=teamsCache.find(t=>t.id===m.teamB);return `<div class="match-card"><div class="match-team">${teamLogoHTML(m.teamA,36)}<span class="match-team-name">${ta?.name||'?'}</span></div><div class="match-score"><span class="score-num">${m.played?m.scoreA:'—'}</span><span class="score-sep">:</span><span class="score-num">${m.played?m.scoreB:'—'}</span></div><div class="match-team right"><span class="match-team-name">${tb?.name||'?'}</span>${teamLogoHTML(m.teamB,36)}</div>${isAdmin()?`<div class="match-actions">${!m.played?`<button class="btn btn-primary btn-sm" onclick="openResult(${week.week},'${m.id}')">Cargar</button><button class="btn btn-secondary btn-sm" onclick="postponeMatch(${week.week},'${m.id}')">${m.postponed?'↩ Restaurar':'⏩ Postergar'}</button>`:`<button class="btn btn-secondary btn-sm" onclick="undoResult(${week.week},'${m.id}')">✏️ Editar</button>`}</div>`:''}</div>`;}).join('')}</div>`;
   }).join('');
 }
 
-// ============================================================
-// FIXTURE
-// ============================================================
-function renderFixture() {
-  const container = document.getElementById('fixture-content');
-  if (!activeTournament) {
-    container.innerHTML = `<div class="empty-state"><div class="icon">📅</div><p>No hay torneo activo.</p></div>`;
-    return;
-  }
-  container.innerHTML = (activeTournament.schedule || []).map(week => {
-    const allPlayed = week.matches.every(m => m.played);
-    const anyPostponed = week.matches.some(m => m.postponed);
-    const statusClass = allPlayed ? 'status-played' : anyPostponed ? 'status-postponed' : 'status-upcoming';
-    const statusLabel = allPlayed ? 'Jugado' : anyPostponed ? 'Postergado' : 'Próximo';
-    return `<div class="fixture-week">
-      <div class="week-header">
-        <div class="week-label">FECHA ${week.week}</div>
-        ${week.dateLabel ? `<span style="font-size:12px;color:var(--text3)">${week.dateLabel}</span>` : ''}
-        <div class="week-line"></div>
-        <span class="week-status ${statusClass}">${statusLabel}</span>
-      </div>
-      ${week.matches.map(m => {
-        const ta = teamsCache.find(t => t.id === m.teamA);
-        const tb = teamsCache.find(t => t.id === m.teamB);
-        return `<div class="match-card">
-          <div class="match-team">${teamLogoHTML(m.teamA, 36)}<span class="match-team-name">${ta?.name || '?'}</span></div>
-          <div class="match-score">
-            <span class="score-num">${m.played ? m.scoreA : '—'}</span>
-            <span class="score-sep">:</span>
-            <span class="score-num">${m.played ? m.scoreB : '—'}</span>
-          </div>
-          <div class="match-team right"><span class="match-team-name">${tb?.name || '?'}</span>${teamLogoHTML(m.teamB, 36)}</div>
-          ${isAdmin() ? `<div class="match-actions">
-            ${!m.played
-              ? `<button class="btn btn-primary btn-sm" onclick="openResult(${week.week},'${m.id}')">Cargar</button>
-                 <button class="btn btn-secondary btn-sm" onclick="postponeMatch(${week.week},'${m.id}')">${m.postponed ? '↩ Restaurar' : '⏩ Postergar'}</button>`
-              : `<button class="btn btn-secondary btn-sm" onclick="undoResult(${week.week},'${m.id}')">✏️ Editar</button>`}
-          </div>` : ''}
-        </div>`;
-      }).join('')}
-    </div>`;
+function openResult(weekNum,matchId){
+  const week=activeTournament.schedule.find(w=>w.week===weekNum);const match=week.matches.find(m=>m.id===matchId);currentMatchRef={weekNum,matchId};
+  document.getElementById('result-team-a-name').textContent=teamsCache.find(t=>t.id===match.teamA)?.name||'?';
+  document.getElementById('result-team-b-name').textContent=teamsCache.find(t=>t.id===match.teamB)?.name||'?';
+  document.getElementById('result-score-a').value=match.scoreA??0;document.getElementById('result-score-b').value=match.scoreB??0;
+  document.getElementById('modal-result-info').textContent='Fecha '+weekNum;openModal('modal-result');
+}
+async function saveResult(){
+  const sa=parseInt(document.getElementById('result-score-a').value)||0;const sb2=parseInt(document.getElementById('result-score-b').value)||0;
+  const week=activeTournament.schedule.find(w=>w.week===currentMatchRef.weekNum);const match=week.matches.find(m=>m.id===currentMatchRef.matchId);
+  match.scoreA=sa;match.scoreB=sb2;match.played=true;match.postponed=false;
+  await sb.from('tournaments').update({schedule:activeTournament.schedule}).eq('id',activeTournament.id);
+  toast('Resultado guardado ✓');closeModal('modal-result');await loadAll();renderFixture();renderDashboard();
+}
+async function undoResult(weekNum,matchId){
+  if(!confirm('¿Quitar el resultado?'))return;
+  const week=activeTournament.schedule.find(w=>w.week===weekNum);const match=week.matches.find(m=>m.id===matchId);
+  match.played=false;match.scoreA=null;match.scoreB=null;
+  await sb.from('tournaments').update({schedule:activeTournament.schedule}).eq('id',activeTournament.id);await loadAll();renderFixture();
+}
+async function postponeMatch(weekNum,matchId){
+  const week=activeTournament.schedule.find(w=>w.week===weekNum);const match=week.matches.find(m=>m.id===matchId);match.postponed=!match.postponed;
+  if(match.postponed){const nw=activeTournament.schedule.find(w=>w.week===weekNum+1);const cloned={...match,id:uid(),postponed:false};if(nw)nw.matches.push(cloned);else activeTournament.schedule.push({week:activeTournament.schedule.length+1,matches:[cloned],dateLabel:'Semana adicional'});}
+  await sb.from('tournaments').update({schedule:activeTournament.schedule}).eq('id',activeTournament.id);await loadAll();renderFixture();
+}
+
+async function renderPresence(){
+  const sel=document.getElementById('week-selector'),content=document.getElementById('presence-content');
+  if(!activeTournament){sel.innerHTML='';content.innerHTML=`<div class="empty-state"><div class="icon">✅</div><p>No hay torneo activo.</p></div>`;return;}
+  sel.innerHTML=(activeTournament.schedule||[]).map(w=>`<div class="week-tab ${w.week===currentPresenceWeek?'active':''}" onclick="setPresenceWeek(${w.week})">Fecha ${w.week}</div>`).join('');
+  const{data:pd}=await sb.from('presence').select('*').eq('tournament_id',activeTournament.id).eq('week_num',currentPresenceWeek);
+  const pm={};(pd||[]).forEach(p=>{pm[p.player_id]=p.status;});
+  let teamIds=activeTournament.team_ids||[];if(!isAdmin()&&currentProfile?.team_id)teamIds=[currentProfile.team_id];
+  content.innerHTML=teamIds.map(tid=>{
+    const team=teamsCache.find(t=>t.id===tid);if(!team)return'';
+    const tp=playersCache.filter(p=>p.team_id===tid);const confirmed=tp.filter(p=>pm[p.id]==='yes').length;
+    return `<div class="presence-team"><div class="presence-team-header">${teamLogoHTML(tid,36)}<div class="presence-team-name">${team.name}</div><span style="color:var(--text3);font-size:12px;margin-left:auto">${confirmed} / ${tp.length} confirmados</span></div>${tp.length===0?'<p style="color:var(--text3);font-size:13px;padding:8px 0">Sin jugadores.</p>':tp.map(p=>{const status=pm[p.id]||'none';const isOwn=currentProfile?.player_id===p.id||isAdmin();return `<div class="player-row" style="padding:10px 8px"><div class="player-num" style="font-size:12px">${p.position?p.position[0]:'—'}</div><div class="player-name-text">${p.name}</div>${isOwn?`<div style="display:flex;gap:8px;align-items:center"><button onclick="setPresence('${p.id}','yes')" class="btn btn-sm ${status==='yes'?'btn-primary':'btn-secondary'}">✓ Voy</button><button onclick="setPresence('${p.id}','no')" class="btn btn-sm ${status==='no'?'btn-danger':'btn-secondary'}">✕ No voy</button><button onclick="setPresence('${p.id}','none')" class="btn btn-sm btn-secondary" style="padding:7px 10px">?</button></div>`:`<div class="player-pos">${status==='yes'?'✓ Confirmado':status==='no'?'✕ No va':'?'}</div>`}</div>`;}).join('')}</div>`;
   }).join('');
 }
-
-function openResult(weekNum, matchId) {
-  const week = activeTournament.schedule.find(w => w.week === weekNum);
-  const match = week.matches.find(m => m.id === matchId);
-  currentMatchRef = { weekNum, matchId };
-  document.getElementById('result-team-a-name').textContent = teamsCache.find(t => t.id === match.teamA)?.name || '?';
-  document.getElementById('result-team-b-name').textContent = teamsCache.find(t => t.id === match.teamB)?.name || '?';
-  document.getElementById('result-score-a').value = match.scoreA ?? 0;
-  document.getElementById('result-score-b').value = match.scoreB ?? 0;
-  document.getElementById('modal-result-info').textContent = 'Fecha ' + weekNum;
-  openModal('modal-result');
+async function setPresenceWeek(w){currentPresenceWeek=w;await renderPresence();}
+async function setPresence(playerId,status){
+  const{error}=await sb.from('presence').upsert({tournament_id:activeTournament.id,week_num:currentPresenceWeek,player_id:playerId,status},{onConflict:'tournament_id,week_num,player_id'});
+  if(error){toast('Error al guardar','error');return;}await renderPresence();
 }
 
-async function saveResult() {
-  const sa = parseInt(document.getElementById('result-score-a').value) || 0;
-  const sb2 = parseInt(document.getElementById('result-score-b').value) || 0;
-  const week = activeTournament.schedule.find(w => w.week === currentMatchRef.weekNum);
-  const match = week.matches.find(m => m.id === currentMatchRef.matchId);
-  match.scoreA = sa; match.scoreB = sb2; match.played = true; match.postponed = false;
-  const { error } = await sb.from('tournaments').update({ schedule: activeTournament.schedule }).eq('id', activeTournament.id);
-  if (error) { toast('Error al guardar resultado', 'error'); return; }
-  toast('Resultado guardado ✓');
-  closeModal('modal-result'); await loadAll(); renderFixture(); renderDashboard();
+async function renderCompromiso(){
+  const c=document.getElementById('compromiso-content');
+  if(!activeTournament){c.innerHTML=`<div class="empty-state"><div class="icon">📊</div><p>No hay torneo activo.</p></div>`;return;}
+  const{data:pd}=await sb.from('presence').select('*').eq('tournament_id',activeTournament.id).eq('status','yes');
+  const pbw={};(pd||[]).forEach(p=>{if(!pbw[p.week_num])pbw[p.week_num]=new Set();pbw[p.week_num].add(p.player_id);});
+  const ps={};(activeTournament.team_ids||[]).forEach(tid=>{playersCache.filter(p=>p.team_id===tid).forEach(p=>{ps[p.id]={name:p.name,teamId:tid,pj:0,pg:0,pe:0,pp:0};});});
+  (activeTournament.schedule||[]).forEach(w=>w.matches.forEach(m=>{
+    if(!m.played)return;const present=pbw[w.week]||new Set();
+    const proc=(tid,win,draw)=>playersCache.filter(p=>p.team_id===tid&&present.has(p.id)).forEach(p=>{if(!ps[p.id])return;ps[p.id].pj++;if(draw)ps[p.id].pe++;else if(win)ps[p.id].pg++;else ps[p.id].pp++;});
+    const draw=m.scoreA===m.scoreB;proc(m.teamA,m.scoreA>m.scoreB,draw);proc(m.teamB,m.scoreB>m.scoreA,draw);
+  }));
+  const sorted=Object.entries(ps).map(([id,s])=>({id,...s})).sort((a,b)=>b.pj-a.pj||b.pg-a.pg||b.pe-a.pe);
+  if(!sorted.length){c.innerHTML=`<div class="empty-state"><div class="icon">📊</div><p>No hay jugadores registrados.</p></div>`;return;}
+  const rc=['gold','silver','bronze'];
+  c.innerHTML=`<div class="card" style="padding:0;overflow:hidden"><table class="standings-table"><thead><tr><th>#</th><th>Jugador</th><th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th><th>PP</th></tr></thead><tbody>${sorted.map((p,i)=>{const team=teamsCache.find(t=>t.id===p.teamId);return `<tr><td><span class="rank-num ${rc[i]||''}">${i+1}</span></td><td><span style="font-weight:700;font-size:14px">${p.name}</span></td><td><div class="team-inline">${teamLogoHTML(p.teamId)}<span style="font-size:13px;color:var(--text2)">${team?.name||'?'}</span></div></td><td><span style="font-family:'Bebas Neue';font-size:20px;color:var(--accent)">${p.pj}</span></td><td style="color:var(--accent)">${p.pg}</td><td style="color:var(--yellow)">${p.pe}</td><td style="color:var(--red)">${p.pp}</td></tr>`;}).join('')}</tbody></table></div><div style="margin-top:12px;font-size:12px;color:var(--text3);padding:0 4px">* Solo se contabilizan partidos en los que el jugador confirmó presencia (✓ Voy).</div>`;
 }
 
-async function undoResult(weekNum, matchId) {
-  if (!confirm('¿Quitar el resultado?')) return;
-  const week = activeTournament.schedule.find(w => w.week === weekNum);
-  const match = week.matches.find(m => m.id === matchId);
-  match.played = false; match.scoreA = null; match.scoreB = null;
-  await sb.from('tournaments').update({ schedule: activeTournament.schedule }).eq('id', activeTournament.id);
-  await loadAll(); renderFixture();
+function renderDashboard(){
+  if(!isAdmin())return;
+  document.getElementById('stat-equipos').textContent=teamsCache.length;document.getElementById('stat-jugadores').textContent=playersCache.length;
+  const played=activeTournament?(activeTournament.schedule||[]).filter(w=>w.matches.every(m=>m.played)).length:0;
+  const nextWeek=activeTournament?((activeTournament.schedule||[]).find(w=>!w.matches.every(m=>m.played))?.week||'—'):'—';
+  document.getElementById('stat-fechas').textContent=played;document.getElementById('stat-semana').textContent=nextWeek!=='—'?'F'+nextWeek:'—';
+  const leaders=computeStandings(activeTournament);const lEl=document.getElementById('dashboard-leaders');
+  if(!leaders.length){lEl.innerHTML='<p style="color:var(--text3);font-size:13px">No hay torneo activo.</p>';}
+  else{const medals=['🥇','🥈','🥉'];lEl.innerHTML=leaders.slice(0,3).map((r,i)=>{const team=teamsCache.find(t=>t.id===r.id);return `<div class="player-row" style="padding:12px 0"><span style="font-size:20px;width:28px">${medals[i]}</span>${teamLogoHTML(r.id)}<div class="player-name-text">${team?.name||'?'}</div><div style="font-family:'Bebas Neue';font-size:22px;color:var(--accent);letter-spacing:1px">${r.pts} pts</div><div style="font-size:12px;color:var(--text3)">${r.pj} PJ · DG ${r.dg>0?'+':''}${r.dg}</div></div>`;}).join('');}
+  const nmEl=document.getElementById('dashboard-next-matches');
+  if(!activeTournament){nmEl.innerHTML='<p style="color:var(--text3);font-size:13px">No hay torneo activo.</p>';return;}
+  const nwd=(activeTournament.schedule||[]).find(w=>!w.matches.every(m=>m.played));
+  if(!nwd){nmEl.innerHTML='<p style="color:var(--accent);font-size:13px">🎉 ¡Todas las fechas jugadas!</p>';return;}
+  nmEl.innerHTML=nwd.matches.filter(m=>!m.played).map(m=>{const ta=teamsCache.find(t=>t.id===m.teamA),tb=teamsCache.find(t=>t.id===m.teamB);return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">${teamLogoHTML(m.teamA)}<span style="font-weight:700;font-size:14px">${ta?.name||'?'}</span><span style="flex:1;text-align:center;font-family:'Bebas Neue';font-size:16px;color:var(--text3)">VS</span><span style="font-weight:700;font-size:14px">${tb?.name||'?'}</span>${teamLogoHTML(m.teamB)}</div>`;}).join('');
 }
 
-async function postponeMatch(weekNum, matchId) {
-  const week = activeTournament.schedule.find(w => w.week === weekNum);
-  const match = week.matches.find(m => m.id === matchId);
-  match.postponed = !match.postponed;
-  if (match.postponed) {
-    const nextWeek = activeTournament.schedule.find(w => w.week === weekNum + 1);
-    const cloned = { ...match, id: uid(), postponed: false };
-    if (nextWeek) nextWeek.matches.push(cloned);
-    else activeTournament.schedule.push({ week: activeTournament.schedule.length + 1, matches: [cloned], dateLabel: 'Semana adicional' });
-  }
-  await sb.from('tournaments').update({ schedule: activeTournament.schedule }).eq('id', activeTournament.id);
-  await loadAll(); renderFixture();
+async function renderUsuarios(){
+  const{data:profiles}=await sb.from('profiles').select('*').order('created_at');
+  const pending=(profiles||[]).filter(p=>p.status==='pending');
+  const others=(profiles||[]).filter(p=>p.status!=='pending');
+  const badge=document.getElementById('pending-badge');
+  if(pending.length){badge.textContent=pending.length;badge.style.display='inline';}else badge.style.display='none';
+  const pendingCard=document.getElementById('pending-users-card');const pendingList=document.getElementById('pending-users-list');
+  pendingCard.style.display=pending.length?'block':'none';
+  pendingList.innerHTML=pending.map(p=>`<div class="pending-user-card"><div class="pending-pulse"></div><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:15px">${p.full_name||'Sin nombre'}</div><div style="font-size:12px;color:var(--text3);margin-top:2px">${p.email}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Solicitó acceso el ${new Date(p.created_at).toLocaleDateString('es-AR')}</div></div><div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap"><button class="btn btn-secondary btn-sm" onclick="openLinkUser('${p.id}','${(p.full_name||p.email).replace(/'/g,'')}')">🔗 Vincular</button><button class="btn btn-primary btn-sm" onclick="approveUser('${p.id}')">✓ Aprobar</button><button class="btn btn-danger btn-sm" onclick="rejectUser('${p.id}')">✕ Rechazar</button></div></div>`).join('');
+  const list=document.getElementById('users-list');
+  if(!others.length){list.innerHTML='<p style="color:var(--text3);font-size:13px">No hay usuarios aprobados todavía.</p>';}
+  else{const statusMap={approved:'badge-approved',rejected:'badge-rejected',pending:'badge-pending'};const statusLabel={approved:'Aprobado',rejected:'Rechazado',pending:'Pendiente'};list.innerHTML=others.map(p=>{const team=teamsCache.find(t=>t.id===p.team_id);const player=playersCache.find(pl=>pl.id===p.player_id);return `<div class="player-row"><div style="width:36px;height:36px;border-radius:10px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${p.role==='admin'?'👑':'⚽'}</div><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:14px">${p.full_name||p.email}</div><div style="font-size:12px;color:var(--text3)">${p.email}${team?' · '+team.name:''}${player?' · '+player.name:''}</div></div><span class="status-badge ${statusMap[p.status]||'badge-pending'}">${statusLabel[p.status]||p.status}</span><span class="user-role ${p.role==='admin'?'role-admin':'role-player'}">${p.role==='admin'?'Admin':'Jugador'}</span><button class="btn btn-secondary btn-sm" onclick="openLinkUser('${p.id}','${(p.full_name||p.email).replace(/'/g,'')}')">🔗</button></div>`;}).join('');}
 }
 
-// ============================================================
-// PRESENCE
-// ============================================================
-async function renderPresence() {
-  const sel = document.getElementById('week-selector');
-  const content = document.getElementById('presence-content');
-  if (!activeTournament) {
-    sel.innerHTML = '';
-    content.innerHTML = `<div class="empty-state"><div class="icon">✅</div><p>No hay torneo activo.</p></div>`;
-    return;
-  }
-
-  sel.innerHTML = (activeTournament.schedule || []).map(w =>
-    `<div class="week-tab ${w.week === currentPresenceWeek ? 'active' : ''}" onclick="setPresenceWeek(${w.week})">Fecha ${w.week}</div>`
-  ).join('');
-
-  // Load presence for this week
-  const { data: presenceData } = await sb.from('presence')
-    .select('*')
-    .eq('tournament_id', activeTournament.id)
-    .eq('week_num', currentPresenceWeek);
-  const presenceMap = {};
-  (presenceData || []).forEach(p => { presenceMap[p.player_id] = p.status; });
-
-  // If player (not admin), only show their team
-  let teamIds = activeTournament.team_ids || [];
-  if (!isAdmin() && currentProfile?.team_id) {
-    teamIds = [currentProfile.team_id];
-  }
-
-  content.innerHTML = teamIds.map(tid => {
-    const team = teamsCache.find(t => t.id === tid);
-    if (!team) return '';
-    const teamPlayers = playersCache.filter(p => p.team_id === tid);
-    const confirmed = teamPlayers.filter(p => presenceMap[p.id] === 'yes').length;
-    return `<div class="presence-team">
-      <div class="presence-team-header">
-        ${teamLogoHTML(tid, 36)}
-        <div class="presence-team-name">${team.name}</div>
-        <span style="color:var(--text3);font-size:12px;margin-left:auto">${confirmed} / ${teamPlayers.length} confirmados</span>
-      </div>
-      ${teamPlayers.length === 0 ? '<p style="color:var(--text3);font-size:13px;padding:8px 0">Sin jugadores.</p>' :
-        teamPlayers.map(p => {
-          const status = presenceMap[p.id] || 'none';
-          // Player can only toggle their own
-          const isOwn = currentProfile?.player_id === p.id || isAdmin();
-          return `<div class="player-row" style="padding:10px 8px">
-            <div class="player-num" style="font-size:12px">${p.position ? p.position[0] : '—'}</div>
-            <div class="player-name-text">${p.name}</div>
-            ${isOwn ? `<div style="display:flex;gap:8px;align-items:center">
-              <button onclick="setPresence('${p.id}','yes')" class="btn btn-sm ${status === 'yes' ? 'btn-primary' : 'btn-secondary'}">✓ Voy</button>
-              <button onclick="setPresence('${p.id}','no')" class="btn btn-sm ${status === 'no' ? 'btn-danger' : 'btn-secondary'}">✕ No voy</button>
-              <button onclick="setPresence('${p.id}','none')" class="btn btn-sm btn-secondary" style="padding:7px 10px">?</button>
-            </div>` : `<div class="player-pos">${status === 'yes' ? '✓ Confirmado' : status === 'no' ? '✕ No va' : '?'}</div>`}
-          </div>`;
-        }).join('')}
-    </div>`;
-  }).join('');
+async function approveUser(userId){
+  await sb.from('profiles').update({status:'approved'}).eq('id',userId);
+  try{await fetch(SUPABASE_URL+'/functions/v1/approve-user',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_ANON_KEY},body:JSON.stringify({user_id:userId,action:'approve'})});}catch(e){}
+  toast('Usuario aprobado ✓');renderUsuarios();
 }
 
-async function setPresenceWeek(w) {
-  currentPresenceWeek = w;
-  await renderPresence();
+async function rejectUser(userId){
+  if(!confirm('¿Rechazar este usuario? No podrá acceder a la app.'))return;
+  await sb.from('profiles').update({status:'rejected'}).eq('id',userId);
+  try{await fetch(SUPABASE_URL+'/functions/v1/approve-user',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_ANON_KEY},body:JSON.stringify({user_id:userId,action:'reject'})});}catch(e){}
+  toast('Usuario rechazado','warning');renderUsuarios();
 }
 
-async function setPresence(playerId, status) {
-  const { error } = await sb.from('presence').upsert({
-    tournament_id: activeTournament.id,
-    week_num: currentPresenceWeek,
-    player_id: playerId,
-    status
-  }, { onConflict: 'tournament_id,week_num,player_id' });
-  if (error) { toast('Error al guardar presencia', 'error'); return; }
-  await renderPresence();
+function openLinkUser(userId,userName){
+  linkingUserId=userId;document.getElementById('link-user-info').textContent='Vinculando: '+userName;
+  const teamSel=document.getElementById('link-user-team');
+  teamSel.innerHTML='<option value="">Sin equipo asignado</option>'+teamsCache.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+  document.getElementById('link-user-player').innerHTML='<option value="">Sin jugador asignado</option>';
+  openModal('modal-link-user');
 }
-
-// ============================================================
-// COMPROMISO FÚTBOL
-// ============================================================
-async function renderCompromiso() {
-  const container = document.getElementById('compromiso-content');
-  if (!activeTournament) {
-    container.innerHTML = `<div class="empty-state"><div class="icon">📊</div><p>No hay torneo activo.</p></div>`;
-    return;
-  }
-
-  const { data: presenceData } = await sb.from('presence')
-    .select('*')
-    .eq('tournament_id', activeTournament.id)
-    .eq('status', 'yes');
-
-  const presentByWeek = {};
-  (presenceData || []).forEach(p => {
-    if (!presentByWeek[p.week_num]) presentByWeek[p.week_num] = new Set();
-    presentByWeek[p.week_num].add(p.player_id);
-  });
-
-  const playerStats = {};
-  const teamIds = activeTournament.team_ids || [];
-  teamIds.forEach(tid => {
-    playersCache.filter(p => p.team_id === tid).forEach(p => {
-      playerStats[p.id] = { name: p.name, teamId: tid, pj: 0, pg: 0, pe: 0, pp: 0 };
-    });
-  });
-
-  (activeTournament.schedule || []).forEach(week => {
-    week.matches.forEach(m => {
-      if (!m.played) return;
-      const presentThisWeek = presentByWeek[week.week] || new Set();
-      const processTeam = (tid, isWinner, isDraw) => {
-        playersCache.filter(p => p.team_id === tid && presentThisWeek.has(p.id)).forEach(p => {
-          if (!playerStats[p.id]) return;
-          playerStats[p.id].pj++;
-          if (isDraw) playerStats[p.id].pe++;
-          else if (isWinner) playerStats[p.id].pg++;
-          else playerStats[p.id].pp++;
-        });
-      };
-      const draw = m.scoreA === m.scoreB;
-      processTeam(m.teamA, m.scoreA > m.scoreB, draw);
-      processTeam(m.teamB, m.scoreB > m.scoreA, draw);
-    });
-  });
-
-  const sorted = Object.entries(playerStats)
-    .map(([id, s]) => ({ id, ...s }))
-    .sort((a, b) => b.pj - a.pj || b.pg - a.pg || b.pe - a.pe);
-
-  if (!sorted.length) {
-    container.innerHTML = `<div class="empty-state"><div class="icon">📊</div><p>No hay jugadores registrados.</p></div>`;
-    return;
-  }
-
-  const rankClass = ['gold', 'silver', 'bronze'];
-  container.innerHTML = `
-    <div class="card" style="padding:0;overflow:hidden">
-      <table class="standings-table">
-        <thead><tr>
-          <th>#</th><th>Jugador</th><th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th><th>PP</th>
-        </tr></thead>
-        <tbody>${sorted.map((p, i) => {
-          const team = teamsCache.find(t => t.id === p.teamId);
-          return `<tr>
-            <td><span class="rank-num ${rankClass[i] || ''}">${i + 1}</span></td>
-            <td><span style="font-weight:700;font-size:14px">${p.name}</span></td>
-            <td><div class="team-inline">${teamLogoHTML(p.teamId)}<span style="font-size:13px;color:var(--text2)">${team?.name || '?'}</span></div></td>
-            <td><span style="font-family:'Bebas Neue';font-size:20px;color:var(--accent)">${p.pj}</span></td>
-            <td style="color:var(--accent)">${p.pg}</td>
-            <td style="color:var(--yellow)">${p.pe}</td>
-            <td style="color:var(--red)">${p.pp}</td>
-          </tr>`;
-        }).join('')}</tbody>
-      </table>
-    </div>
-    <div style="margin-top:12px;font-size:12px;color:var(--text3);padding:0 4px">
-      * Solo se contabilizan partidos en los que el jugador confirmó presencia (✓ Voy).
-    </div>`;
+function populateLinkPlayerSelect(){
+  const tid=document.getElementById('link-user-team').value;const sel=document.getElementById('link-user-player');
+  sel.innerHTML='<option value="">Sin jugador asignado</option>';
+  if(tid)playersCache.filter(p=>p.team_id===tid).forEach(p=>{sel.innerHTML+=`<option value="${p.id}">${p.name}</option>`;});
 }
-
-// ============================================================
-// DASHBOARD
-// ============================================================
-function renderDashboard() {
-  if (!isAdmin()) return;
-  document.getElementById('stat-equipos').textContent = teamsCache.length;
-  document.getElementById('stat-jugadores').textContent = playersCache.length;
-  const played = activeTournament ? (activeTournament.schedule || []).filter(w => w.matches.every(m => m.played)).length : 0;
-  const nextWeek = activeTournament ? ((activeTournament.schedule || []).find(w => !w.matches.every(m => m.played))?.week || '—') : '—';
-  document.getElementById('stat-fechas').textContent = played;
-  document.getElementById('stat-semana').textContent = nextWeek !== '—' ? 'F' + nextWeek : '—';
-
-  const leaders = computeStandings(activeTournament);
-  const lEl = document.getElementById('dashboard-leaders');
-  if (!leaders.length) { lEl.innerHTML = '<p style="color:var(--text3);font-size:13px">No hay torneo activo.</p>'; }
-  else {
-    const medals = ['🥇', '🥈', '🥉'];
-    lEl.innerHTML = leaders.slice(0, 3).map((r, i) => {
-      const team = teamsCache.find(t => t.id === r.id);
-      return `<div class="player-row" style="padding:12px 0">
-        <span style="font-size:20px;width:28px">${medals[i]}</span>
-        ${teamLogoHTML(r.id)}
-        <div class="player-name-text">${team?.name || '?'}</div>
-        <div style="font-family:'Bebas Neue';font-size:22px;color:var(--accent);letter-spacing:1px">${r.pts} pts</div>
-        <div style="font-size:12px;color:var(--text3)">${r.pj} PJ · DG ${r.dg > 0 ? '+' : ''}${r.dg}</div>
-      </div>`;
-    }).join('');
-  }
-
-  const nmEl = document.getElementById('dashboard-next-matches');
-  if (!activeTournament) { nmEl.innerHTML = '<p style="color:var(--text3);font-size:13px">No hay torneo activo.</p>'; return; }
-  const nextWeekData = (activeTournament.schedule || []).find(w => !w.matches.every(m => m.played));
-  if (!nextWeekData) { nmEl.innerHTML = '<p style="color:var(--accent);font-size:13px">🎉 ¡Todas las fechas jugadas!</p>'; return; }
-  nmEl.innerHTML = nextWeekData.matches.filter(m => !m.played).map(m => {
-    const ta = teamsCache.find(t => t.id === m.teamA);
-    const tb = teamsCache.find(t => t.id === m.teamB);
-    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
-      ${teamLogoHTML(m.teamA)}
-      <span style="font-weight:700;font-size:14px">${ta?.name || '?'}</span>
-      <span style="flex:1;text-align:center;font-family:'Bebas Neue';font-size:16px;color:var(--text3)">VS</span>
-      <span style="font-weight:700;font-size:14px">${tb?.name || '?'}</span>
-      ${teamLogoHTML(m.teamB)}
-    </div>`;
-  }).join('');
-}
-
-// ============================================================
-// USUARIOS (admin)
-// ============================================================
-async function renderUsuarios() {
-  const { data: profiles } = await sb.from('profiles').select('*').order('created_at');
-  const list = document.getElementById('users-list');
-  if (!profiles?.length) { list.innerHTML = '<p style="color:var(--text3);font-size:13px">No hay usuarios.</p>'; return; }
-  list.innerHTML = profiles.map(p => {
-    const team = teamsCache.find(t => t.id === p.team_id);
-    const player = playersCache.find(pl => pl.id === p.player_id);
-    return `<div class="player-row">
-      <div style="width:36px;height:36px;border-radius:10px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${p.role === 'admin' ? '👑' : '⚽'}</div>
-      <div style="flex:1">
-        <div style="font-weight:700;font-size:14px">${p.full_name || p.email}</div>
-        <div style="font-size:12px;color:var(--text3)">${p.email} ${team ? '· ' + team.name : ''} ${player ? '· ' + player.name : ''}</div>
-      </div>
-      <span class="user-role ${p.role === 'admin' ? 'role-admin' : 'role-player'}">${p.role === 'admin' ? 'Admin' : 'Jugador'}</span>
-    </div>`;
-  }).join('');
-}
-
-function populateUserModal() {
-  const teamSel = document.getElementById('new-user-team');
-  teamSel.innerHTML = '<option value="">Sin equipo asignado</option>' +
-    teamsCache.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
-  document.getElementById('new-user-player').innerHTML = '<option value="">Sin jugador asignado</option>';
-  document.getElementById('new-user-email').value = '';
-  document.getElementById('new-user-password').value = '';
-  document.getElementById('new-user-fullname').value = '';
-  document.getElementById('new-user-role').value = 'player';
-}
-
-document.getElementById('new-user-team').addEventListener('change', function () {
-  const tid = this.value;
-  const playerSel = document.getElementById('new-user-player');
-  const group = document.getElementById('new-user-player-group');
-  if (!tid) { group.style.display = 'none'; return; }
-  const teamPlayers = playersCache.filter(p => p.team_id === tid);
-  playerSel.innerHTML = '<option value="">Sin jugador asignado</option>' +
-    teamPlayers.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-  group.style.display = 'block';
-});
-
-async function createUser() {
-  const email = document.getElementById('new-user-email').value.trim();
-  const password = document.getElementById('new-user-password').value;
-  const fullName = document.getElementById('new-user-fullname').value.trim();
-  const role = document.getElementById('new-user-role').value;
-  const teamId = document.getElementById('new-user-team').value;
-  const playerId = document.getElementById('new-user-player').value;
-  if (!email || !password) { toast('Email y contraseña son obligatorios', 'error'); return; }
-  if (password.length < 6) { toast('La contraseña debe tener al menos 6 caracteres', 'error'); return; }
-
-  // Use admin API via edge function — fallback: use signUp with metadata
-  const { data, error } = await sb.auth.admin ? 
-    sb.auth.admin.createUser({ email, password, email_confirm: true }) :
-    sb.auth.signUp({ email, password, options: { data: { full_name: fullName } } });
-
-  if (error) { toast('Error: ' + error.message, 'error'); return; }
-
-  const userId = data?.user?.id;
-  if (userId) {
-    await sb.from('profiles').upsert({
-      id: userId, email, role, full_name: fullName,
-      team_id: teamId || null, player_id: playerId || null
-    });
-  }
-  toast('Usuario creado. El jugador debe revisar su email para confirmar.', 'success');
-  closeModal('modal-new-user');
-  renderUsuarios();
+async function saveLinkUser(){
+  const teamId=document.getElementById('link-user-team').value;const playerId=document.getElementById('link-user-player').value;
+  await sb.from('profiles').update({team_id:teamId||null,player_id:playerId||null}).eq('id',linkingUserId);
+  toast('Usuario vinculado ✓');closeModal('modal-link-user');renderUsuarios();
 }
 </script>
 </body>

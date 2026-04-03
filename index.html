@@ -420,19 +420,20 @@ async function doRegister(){
 
 async function doLogout(){await sb.auth.signOut();}
 
-sb.auth.onAuthStateChange(async(event,session)=>{
+let appInitialized=false;
+
+async function initApp(user){
+  currentUser=user;
+  const{data:profile}=await sb.from('profiles').select('*').eq('id',user.id).single();
+  currentProfile=profile;
   const authEl=document.getElementById('auth-screen');
   const appEl=document.getElementById('app-screen');
   const pendEl=document.getElementById('pending-screen');
   authEl.style.display='none';appEl.style.display='none';appEl.classList.remove('show');pendEl.style.display='none';
-  if(!session?.user){authEl.style.display='flex';return;}
-  currentUser=session.user;
-  const{data:profile}=await sb.from('profiles').select('*').eq('id',currentUser.id).single();
-  currentProfile=profile;
   if(!profile||profile.status==='pending'){
     document.getElementById('pending-icon').textContent='⏳';
     document.getElementById('pending-title').textContent='CUENTA PENDIENTE';
-    document.getElementById('pending-text').textContent='Tu solicitud fue enviada correctamente.\n\nEl admin revisará tu cuenta y recibirás un mail cuando sea aprobada.';
+    document.getElementById('pending-text').textContent='Tu solicitud fue enviada correctamente. El admin revisará tu cuenta y recibirás un mail cuando sea aprobada.';
     pendEl.style.display='flex';return;
   }
   if(profile.status==='rejected'){
@@ -441,16 +442,34 @@ sb.auth.onAuthStateChange(async(event,session)=>{
     document.getElementById('pending-text').textContent='Tu solicitud no fue aprobada. Contactá al administrador del torneo.';
     pendEl.style.display='flex';return;
   }
-  document.getElementById('sb-user-name').textContent=profile.full_name||currentUser.email.split('@')[0];
-  document.getElementById('sb-user-email').textContent=currentUser.email;
+  document.getElementById('sb-user-name').textContent=profile.full_name||user.email.split('@')[0];
+  document.getElementById('sb-user-email').textContent=user.email;
   const roleEl=document.getElementById('sb-user-role');
   roleEl.textContent=profile.role==='admin'?'Admin':'Jugador';
   roleEl.className='user-role '+(profile.role==='admin'?'role-admin':'role-player');
   document.querySelectorAll('.admin-only').forEach(el=>el.style.display=isAdmin()?'flex':'none');
   appEl.style.display='flex';appEl.classList.add('show');
+  appInitialized=true;
   await loadAll();
   if(isAdmin()){showPage('dashboard');checkPendingBadge();}
   else showPage('presencia');
+}
+
+sb.auth.onAuthStateChange(async(event,session)=>{
+  // Ignorar eventos que no cambian el estado real de login
+  if(event==='TOKEN_REFRESHED'||event==='USER_UPDATED'){return;}
+  if(event==='SIGNED_OUT'||!session?.user){
+    appInitialized=false;currentUser=null;currentProfile=null;
+    document.getElementById('auth-screen').style.display='flex';
+    document.getElementById('app-screen').style.display='none';
+    document.getElementById('app-screen').classList.remove('show');
+    document.getElementById('pending-screen').style.display='none';
+    return;
+  }
+  // SIGNED_IN o INITIAL_SESSION — solo inicializar si no está ya corriendo
+  if(!appInitialized){
+    await initApp(session.user);
+  }
 });
 
 async function loadAll(){

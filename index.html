@@ -1596,10 +1596,13 @@ async function submitPost(){
   const content=document.getElementById('post-content').value.trim();
   if(!content&&!postMediaB64){toast('Escribí algo o subí una imagen/video','error');return;}
   if(!activeTournament){toast('Seleccioná un torneo primero','error');return;}
+  const btn=document.querySelector('#modal-new-post .btn-primary');
+  btn.textContent='Subiendo...';btn.disabled=true;
   const{error}=await sb.from('tribuna_posts').insert({
     tournament_id:activeTournament.id,user_id:currentUser.id,
     content:content||null,media_url:postMediaB64||null,media_type:postMediaType||null
   });
+  btn.textContent='Publicar';btn.disabled=false;
   if(error){toast('Error al publicar','error');return;}
   toast('Post publicado ✓');closeModal('modal-new-post');
   document.getElementById('post-content').value='';postMediaB64=null;postMediaType=null;

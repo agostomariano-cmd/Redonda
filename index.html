@@ -176,6 +176,28 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 /* PLAYER TOURNAMENT BAR */
 #player-tournament-bar{display:none;margin-bottom:24px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 20px;flex-wrap:wrap;gap:12px;align-items:center}
 #no-tournament-screen{display:none;text-align:center;padding:80px 20px}
+/* TRIBUNA */
+.post-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px}
+.post-card.reported{border-color:var(--red);opacity:.7}
+.post-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.post-avatar{width:38px;height:38px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;border:1px solid var(--border)}
+.post-author{font-weight:700;font-size:14px}
+.post-time{font-size:11px;color:var(--text3)}
+.post-content{font-size:14px;line-height:1.7;color:var(--text);margin-bottom:12px}
+.post-media{width:100%;max-height:360px;object-fit:cover;border-radius:10px;margin-bottom:12px;cursor:pointer}
+.post-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.post-action-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.post-action-btn:hover{border-color:var(--accent);color:var(--text)}
+.post-action-btn.liked{background:rgba(0,230,118,.1);border-color:var(--accent);color:var(--accent)}
+.post-action-btn.disliked{background:rgba(255,61,61,.1);border-color:var(--red);color:var(--red)}
+.post-action-btn.report{color:var(--text3);font-size:11px;margin-left:auto}
+.post-action-btn.report:hover{color:var(--red);border-color:var(--red)}
+/* MANUAL FIXTURE BUILDER */
+.manual-week{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px}
+.manual-week-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.manual-match-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+/* EDIT MATCH */
+.match-card.editable{cursor:pointer}.match-card.editable:hover{border-color:var(--accent2)}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 @media(max-width:640px){.sidebar{width:60px}.nav-btn span,.nav-badge,.notif-btn span{display:none}.logo-title{font-size:18px}.logo-sub{display:none}.main{margin-left:60px;padding:16px}.form-row{grid-template-columns:1fr}.notif-panel{width:100vw}}
 </style>
@@ -215,10 +237,12 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
     <nav class="nav">
       <button class="nav-btn" onclick="showPage('mis-torneos')"><span class="icon">🏆</span><span>Mis Torneos</span></button>
       <button class="nav-btn" onclick="showPage('equipos')"><span class="icon">🛡️</span><span>Equipos</span></button>
-      <button class="nav-btn" onclick="showPage('presencia')"><span class="icon">✅</span><span>Presencia</span></button>
+      <button class="nav-btn" onclick="showPage('confirma')"><span class="icon">✅</span><span>Confirma tu lugar</span></button>
       <button class="nav-btn" onclick="showPage('posiciones')"><span class="icon">📊</span><span>Posiciones</span></button>
       <button class="nav-btn" onclick="showPage('fixture')"><span class="icon">📅</span><span>Fixture</span></button>
+      <button class="nav-btn" onclick="showPage('goleadores')"><span class="icon">⚽</span><span>Goleadores</span></button>
       <button class="nav-btn" onclick="showPage('compromiso')"><span class="icon">🎖️</span><span>Compromiso</span></button>
+      <button class="nav-btn" onclick="showPage('tribuna')"><span class="icon">📣</span><span>Tribuna</span></button>
       <button class="nav-btn admin-only" onclick="showPage('usuarios')"><span class="icon">👑</span><span>Usuarios</span></button>
       <div style="height:1px;background:var(--border);margin:8px 4px"></div>
       <button class="notif-btn" onclick="toggleNotifPanel()" id="notif-nav-btn">
@@ -259,7 +283,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
     <div class="page" id="page-mis-torneos">
       <div class="page-header">
         <div><div class="page-title">MIS <span>TORNEOS</span></div><div class="page-sub">Torneos que organizás o en los que participás</div></div>
-        <button class="btn btn-primary" onclick="openModal('modal-new-tournament')">➕ Nuevo torneo</button>
+        <button class="btn btn-primary" onclick="openModal('modal-tournament-type')">➕ Nuevo torneo</button>
       </div>
       <div id="mis-torneos-content"></div>
     </div>
@@ -273,9 +297,9 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
       <div class="grid-2" id="teams-grid"></div>
     </div>
 
-    <!-- PRESENCIA -->
-    <div class="page" id="page-presencia">
-      <div class="page-header"><div><div class="page-title">PRESEN<span>CIA</span></div><div class="page-sub">Confirmación semanal</div></div></div>
+    <!-- CONFIRMA TU LUGAR -->
+    <div class="page" id="page-confirma">
+      <div class="page-header"><div><div class="page-title">CONFIRMÁ <span>TU LUGAR</span></div><div class="page-sub">Avisá si vas a estar en la próxima fecha</div></div></div>
       <div class="week-selector" id="week-selector"></div>
       <div id="presence-content"></div>
     </div>
@@ -290,6 +314,21 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
     <div class="page" id="page-fixture">
       <div class="page-header"><div><div class="page-title">FIX<span>TURE</span></div><div class="page-sub">Resultados y fechas</div></div></div>
       <div id="fixture-content"></div>
+    </div>
+
+    <!-- GOLEADORES -->
+    <div class="page" id="page-goleadores">
+      <div class="page-header"><div><div class="page-title">GOLEA<span>DORES</span></div><div class="page-sub">Ranking de goles del torneo</div></div></div>
+      <div id="goleadores-content"></div>
+    </div>
+
+    <!-- TRIBUNA -->
+    <div class="page" id="page-tribuna">
+      <div class="page-header">
+        <div><div class="page-title">LA <span>TRIBUNA</span></div><div class="page-sub">El espacio de los hinchas</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-new-post')">📣 Nuevo post</button>
+      </div>
+      <div id="tribuna-content"></div>
     </div>
 
     <!-- COMPROMISO -->
@@ -365,19 +404,127 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 
 <!-- RESULTADO -->
 <div class="modal-overlay" id="modal-result">
-  <div class="modal" style="max-width:400px">
+  <div class="modal" style="max-width:500px">
     <div class="modal-title">CARGAR <span>RESULTADO</span></div>
     <div id="modal-result-info" style="color:var(--text2);font-size:14px;margin-bottom:20px"></div>
     <div style="display:flex;align-items:center;gap:16px;justify-content:center;margin:20px 0">
-      <div style="text-align:center"><div id="result-team-a-name" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;margin-bottom:8px"></div><input type="number" min="0" id="result-score-a" class="form-input" style="width:70px;text-align:center;font-family:'Bebas Neue';font-size:28px;padding:8px" value="0"></div>
+      <div style="text-align:center"><div id="result-team-a-name" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;margin-bottom:8px"></div><input type="number" min="0" id="result-score-a" class="form-input" style="width:70px;text-align:center;font-family:'Bebas Neue';font-size:28px;padding:8px" value="0" oninput="renderGoalScorers()"></div>
       <div style="font-family:'Bebas Neue';font-size:28px;color:var(--text3)">VS</div>
-      <div style="text-align:center"><div id="result-team-b-name" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;margin-bottom:8px"></div><input type="number" min="0" id="result-score-b" class="form-input" style="width:70px;text-align:center;font-family:'Bebas Neue';font-size:28px;padding:8px" value="0"></div>
+      <div style="text-align:center"><div id="result-team-b-name" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;margin-bottom:8px"></div><input type="number" min="0" id="result-score-b" class="form-input" style="width:70px;text-align:center;font-family:'Bebas Neue';font-size:28px;padding:8px" value="0" oninput="renderGoalScorers()"></div>
     </div>
+    <div class="section-divider"></div>
+    <div class="card-title" style="margin-bottom:12px">⚽ Goleadores <span style="font-weight:400;font-size:12px;color:var(--text3);text-transform:none;letter-spacing:0">(opcional)</span></div>
+    <div id="goal-scorers-container"></div>
     <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-result')">Cancelar</button><button class="btn btn-primary" onclick="saveResult()">Guardar resultado</button></div>
   </div>
 </div>
 
-<!-- GESTIONAR JUGADORES DEL TORNEO -->
+<!-- TIPO DE TORNEO -->
+<div class="modal-overlay" id="modal-tournament-type">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-title">NUEVO <span>TORNEO</span></div>
+    <p style="color:var(--text2);font-size:14px;margin-bottom:24px">¿Cómo querés crear el torneo?</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div onclick="selectTournamentType('auto')" style="background:var(--surface2);border:2px solid var(--border);border-radius:16px;padding:24px;text-align:center;cursor:pointer;transition:all .2s" id="type-auto-card">
+        <div style="font-size:40px;margin-bottom:12px">🤖</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:var(--accent);margin-bottom:8px">AUTOMÁTICO</div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.6">El fixture se genera automáticamente con round robin</div>
+      </div>
+      <div onclick="selectTournamentType('manual')" style="background:var(--surface2);border:2px solid var(--border);border-radius:16px;padding:24px;text-align:center;cursor:pointer;transition:all .2s" id="type-manual-card">
+        <div style="font-size:40px;margin-bottom:12px">✏️</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:var(--accent2);margin-bottom:8px">MANUAL</div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.6">Cargás vos los partidos, fechas y resultados pasados</div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-tournament-type')">Cancelar</button></div>
+  </div>
+</div>
+
+<!-- NUEVO TORNEO MANUAL -->
+<div class="modal-overlay" id="modal-new-tournament-manual">
+  <div class="modal">
+    <div class="modal-title">TORNEO <span>MANUAL</span></div>
+    <div id="manual-step-1" >
+      <div class="form-group"><label class="form-label">Nombre del torneo</label><input class="form-input" id="manual-tournament-name" placeholder="Ej: Liga Invierno 2024"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Fecha de inicio (puede ser pasada)</label><input class="form-input" type="date" id="manual-start-date"></div>
+        <div class="form-group"><label class="form-label">Vueltas</label><input class="form-input" type="number" id="manual-vueltas" min="1" placeholder="Ej: 2"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Equipos participantes</label><div id="manual-team-select" class="team-check-grid"></div></div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-new-tournament-manual')">Cancelar</button><button class="btn btn-primary" onclick="goToManualFixture()">Siguiente → Armar fixture</button></div>
+    </div>
+    <div id="manual-step-2" style="display:none">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+        <button class="btn btn-secondary btn-sm" onclick="backToManualStep1()">← Volver</button>
+        <div style="font-size:14px;color:var(--text2)">Configurá cada fecha del fixture</div>
+      </div>
+      <div id="manual-fixture-builder"></div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-new-tournament-manual')">Cancelar</button><button class="btn btn-primary" onclick="saveManualTournament()">Crear torneo</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- EDITAR PARTIDO (fixture editable) -->
+<div class="modal-overlay" id="modal-edit-match">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-title">EDITAR <span>PARTIDO</span></div>
+    <div class="form-group"><label class="form-label">Fecha del partido</label><input class="form-input" type="date" id="edit-match-date"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Equipo local</label><select class="form-input" id="edit-match-team-a"><option value="">Seleccioná</option></select></div>
+      <div class="form-group"><label class="form-label">Equipo visitante</label><select class="form-input" id="edit-match-team-b"><option value="">Seleccioná</option></select></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Estado</label>
+      <select class="form-input" id="edit-match-status">
+        <option value="upcoming">Próximo</option>
+        <option value="played">Jugado</option>
+        <option value="postponed">Postergado / Suspendido</option>
+      </select>
+    </div>
+    <div id="edit-match-score-section">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label" id="edit-score-a-label">Goles local</label><input type="number" min="0" class="form-input" id="edit-match-score-a" value="0"></div>
+        <div class="form-group"><label class="form-label" id="edit-score-b-label">Goles visitante</label><input type="number" min="0" class="form-input" id="edit-match-score-b" value="0"></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-edit-match')">Cancelar</button><button class="btn btn-primary" onclick="saveEditMatch()">Guardar cambios</button></div>
+  </div>
+</div>
+
+<!-- NUEVO POST TRIBUNA -->
+<div class="modal-overlay" id="modal-new-post">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-title">📣 NUEVO <span>POST</span></div>
+    <div class="form-group">
+      <label class="form-label">¿Qué querés decir?</label>
+      <textarea class="form-input" id="post-content" rows="4" placeholder="Escribí algo para la tribuna..." style="resize:vertical"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Imagen o video (opcional)</label>
+      <div style="border:2px dashed var(--border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:border-color .2s" onclick="document.getElementById('post-media-file').click()" id="media-drop-zone">
+        <input type="file" id="post-media-file" accept="image/*,video/*" style="display:none" onchange="previewPostMedia(this)">
+        <div id="media-preview-placeholder" style="color:var(--text3);font-size:13px">📎 Clic para subir imagen o video</div>
+        <img id="media-preview-img" style="display:none;max-width:100%;max-height:200px;border-radius:8px;margin-top:8px">
+        <video id="media-preview-video" style="display:none;max-width:100%;max-height:200px;border-radius:8px;margin-top:8px" controls></video>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-new-post')">Cancelar</button><button class="btn btn-primary" onclick="submitPost()">Publicar</button></div>
+  </div>
+</div>
+
+<!-- COMENTARIOS -->
+<div class="modal-overlay" id="modal-comments">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-title">💬 COMENTARIOS</div>
+    <div id="comments-list" style="max-height:300px;overflow-y:auto;margin-bottom:16px"></div>
+    <div class="section-divider"></div>
+    <div style="display:flex;gap:10px;align-items:flex-start">
+      <textarea class="form-input" id="new-comment-text" rows="2" placeholder="Escribí un comentario..." style="flex:1;resize:none"></textarea>
+      <button class="btn btn-primary" style="flex-shrink:0" onclick="submitComment()">Enviar</button>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-comments')">Cerrar</button></div>
+  </div>
+</div>
 <div class="modal-overlay" id="modal-manage-players">
   <div class="modal">
     <div class="modal-title">JUGADORES <span>DEL TORNEO</span></div>
@@ -595,7 +742,7 @@ function showPage(name){
   document.querySelectorAll('.nav-btn,.notif-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('no-tournament-screen').style.display='none';
   document.getElementById('player-tournament-bar').style.display='none';
-  const playerPages=['presencia','posiciones','fixture','compromiso'];
+  const playerPages=['confirma','posiciones','fixture','goleadores','compromiso','tribuna'];
   if(playerPages.includes(name)){
     const myIds=getMyTournamentIds();
     if(myIds.length===0){document.getElementById('no-tournament-screen').style.display='block';return;}
@@ -610,10 +757,12 @@ function showPage(name){
   });
   if(name==='mis-torneos')renderMisTorneos();
   if(name==='equipos')renderTeams();
-  if(name==='presencia')renderPresence();
+  if(name==='confirma')renderPresence();
   if(name==='posiciones')renderStandings();
   if(name==='fixture')renderFixture();
+  if(name==='goleadores')renderGoleadores();
   if(name==='compromiso')renderCompromiso();
+  if(name==='tribuna')renderTribuna();
   if(name==='usuarios')renderUsuarios();
 }
 
@@ -1194,6 +1343,409 @@ async function addPlayerToTeam(){
   await loadAll();renderModalPlayers();
 }
 async function removePlayer(pid){await sb.from('players').delete().eq('id',pid);await loadAll();renderModalPlayers();}
+
+// ===== TOURNAMENT TYPE SELECTOR =====
+function selectTournamentType(type){
+  closeModal('modal-tournament-type');
+  if(type==='auto'){openModal('modal-new-tournament');}
+  else{openManualTournamentModal();}
+}
+
+// ===== TORNEO MANUAL =====
+let manualTournamentData={};
+function openManualTournamentModal(){
+  document.getElementById('manual-step-1').style.display='block';
+  document.getElementById('manual-step-2').style.display='none';
+  document.getElementById('manual-tournament-name').value='';
+  document.getElementById('manual-start-date').value='';
+  document.getElementById('manual-vueltas').value='2';
+  // Populate teams
+  const c=document.getElementById('manual-team-select');
+  if(!teamsCache.length){c.innerHTML='<p style="color:var(--text3);font-size:13px">No hay equipos. Creá equipos primero.</p>';}
+  else c.innerHTML=teamsCache.map(t=>`<label class="team-check-item selected" id="mtci-${t.id}"><input type="checkbox" value="${t.id}" checked onchange="toggleManualTeamCheck('${t.id}')"><div class="check-icon" id="mci-${t.id}">✓</div><span class="check-team-name">${t.name}</span></label>`).join('');
+  openModal('modal-new-tournament-manual');
+}
+function toggleManualTeamCheck(id){const el=document.getElementById('mtci-'+id),ci=document.getElementById('mci-'+id),inp=el.querySelector('input');el.classList.toggle('selected',inp.checked);ci.textContent=inp.checked?'✓':'';}
+
+function goToManualFixture(){
+  const name=document.getElementById('manual-tournament-name').value.trim();if(!name){toast('Ingresá un nombre','error');return;}
+  const selected=[];document.querySelectorAll('#manual-team-select input:checked').forEach(cb=>selected.push(cb.value));
+  if(selected.length<2){toast('Seleccioná al menos 2 equipos','error');return;}
+  const vueltas=parseInt(document.getElementById('manual-vueltas').value)||2;
+  const startDate=document.getElementById('manual-start-date').value;
+  // Generate schedule structure
+  const schedule=generateRoundRobin(selected,vueltas);
+  // Pre-fill dates starting from startDate
+  if(startDate){
+    let d=new Date(startDate+'T12:00:00');
+    schedule.forEach(w=>{w.dateLabel=d.toLocaleDateString('es-AR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});w.dateValue=d.toISOString().split('T')[0];d.setDate(d.getDate()+7);});
+  }
+  manualTournamentData={name,selected,vueltas,schedule};
+  renderManualFixtureBuilder();
+  document.getElementById('manual-step-1').style.display='none';
+  document.getElementById('manual-step-2').style.display='block';
+}
+
+function backToManualStep1(){
+  document.getElementById('manual-step-1').style.display='block';
+  document.getElementById('manual-step-2').style.display='none';
+}
+
+function renderManualFixtureBuilder(){
+  const builder=document.getElementById('manual-fixture-builder');
+  const{schedule,selected}=manualTournamentData;
+  builder.innerHTML=schedule.map((week,wi)=>{
+    return `<div class="manual-week">
+      <div class="manual-week-header">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--text2)">FECHA ${week.week}</div>
+        <input type="date" class="form-input" style="width:180px;font-size:13px;padding:8px 10px" value="${week.dateValue||''}" onchange="updateManualWeekDate(${wi},this.value)" placeholder="Fecha">
+      </div>
+      ${week.matches.map((m,mi)=>`
+        <div class="manual-match-row">
+          <select class="form-input" style="flex:1;font-size:13px;padding:8px" onchange="updateManualMatchTeam(${wi},${mi},'A',this.value)">
+            <option value="">Local</option>
+            ${selected.map(tid=>{const t=teamsCache.find(x=>x.id===tid);return `<option value="${tid}" ${m.teamA===tid?'selected':''}>${t?.name||'?'}</option>`;}).join('')}
+          </select>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--text3);padding:0 4px">VS</div>
+          <select class="form-input" style="flex:1;font-size:13px;padding:8px" onchange="updateManualMatchTeam(${wi},${mi},'B',this.value)">
+            <option value="">Visitante</option>
+            ${selected.map(tid=>{const t=teamsCache.find(x=>x.id===tid);return `<option value="${tid}" ${m.teamB===tid?'selected':''}>${t?.name||'?'}</option>`;}).join('')}
+          </select>
+          <div style="display:flex;gap:4px;align-items:center">
+            <input type="number" min="0" class="form-input" style="width:52px;text-align:center;padding:8px;font-family:'Bebas Neue';font-size:18px" value="${m.scoreA??''}" placeholder="-" onchange="updateManualScore(${wi},${mi},'A',this.value)">
+            <span style="color:var(--text3)">-</span>
+            <input type="number" min="0" class="form-input" style="width:52px;text-align:center;padding:8px;font-family:'Bebas Neue';font-size:18px" value="${m.scoreB??''}" placeholder="-" onchange="updateManualScore(${wi},${mi},'B',this.value)">
+          </div>
+          <button class="btn btn-icon btn-danger" onclick="removeManualMatch(${wi},${mi})" title="Quitar partido">✕</button>
+        </div>`).join('')}
+      <button class="btn btn-secondary btn-sm" style="margin-top:8px" onclick="addManualMatch(${wi})">+ Agregar partido</button>
+    </div>`;
+  }).join('')+`<button class="btn btn-secondary btn-sm" onclick="addManualWeek()" style="margin-bottom:16px">+ Agregar fecha</button>`;
+}
+
+function updateManualWeekDate(wi,val){
+  manualTournamentData.schedule[wi].dateValue=val;
+  manualTournamentData.schedule[wi].dateLabel=val?new Date(val+'T12:00:00').toLocaleDateString('es-AR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}):'';
+}
+function updateManualMatchTeam(wi,mi,side,val){manualTournamentData.schedule[wi].matches[mi]['team'+side]=val;}
+function updateManualScore(wi,mi,side,val){
+  const m=manualTournamentData.schedule[wi].matches[mi];
+  m['score'+side]=val!==''?parseInt(val):null;
+  m.played=m.scoreA!==null&&m.scoreB!==null;
+}
+function removeManualMatch(wi,mi){manualTournamentData.schedule[wi].matches.splice(mi,1);renderManualFixtureBuilder();}
+function addManualMatch(wi){manualTournamentData.schedule[wi].matches.push({id:uid(),teamA:'',teamB:'',scoreA:null,scoreB:null,played:false,postponed:false});renderManualFixtureBuilder();}
+function addManualWeek(){const n=manualTournamentData.schedule.length+1;manualTournamentData.schedule.push({week:n,matches:[{id:uid(),teamA:'',teamB:'',scoreA:null,scoreB:null,played:false,postponed:false}],dateLabel:'',dateValue:''});renderManualFixtureBuilder();}
+
+async function saveManualTournament(){
+  const{name,selected,vueltas,schedule}=manualTournamentData;
+  const{error}=await sb.from('tournaments').insert({id:uid(),name,team_ids:selected,schedule,vueltas,is_active:false,created_by:currentUser.id});
+  if(error){toast('Error al crear torneo','error');return;}
+  toast('Torneo creado ✓');closeModal('modal-new-tournament-manual');await loadAll();renderMisTorneos();
+}
+
+// ===== EDITAR PARTIDO (fixture editable) =====
+let editingMatchRef=null;
+function openEditMatch(weekNum,matchId){
+  const week=activeTournament.schedule.find(w=>w.week===weekNum);
+  const match=week.matches.find(m=>m.id===matchId);
+  editingMatchRef={weekNum,matchId};
+  // Date
+  const dateVal=week.dateValue||'';
+  document.getElementById('edit-match-date').value=dateVal;
+  // Teams
+  const teamOpts=(activeTournament.team_ids||[]).map(tid=>{const t=teamsCache.find(x=>x.id===tid);return `<option value="${tid}">${t?.name||'?'}</option>`;}).join('');
+  document.getElementById('edit-match-team-a').innerHTML='<option value="">Seleccioná</option>'+teamOpts;
+  document.getElementById('edit-match-team-b').innerHTML='<option value="">Seleccioná</option>'+teamOpts;
+  document.getElementById('edit-match-team-a').value=match.teamA||'';
+  document.getElementById('edit-match-team-b').value=match.teamB||'';
+  // Status
+  const status=match.played?'played':match.postponed?'postponed':'upcoming';
+  document.getElementById('edit-match-status').value=status;
+  // Scores
+  document.getElementById('edit-match-score-a').value=match.scoreA??0;
+  document.getElementById('edit-match-score-b').value=match.scoreB??0;
+  const ta=teamsCache.find(t=>t.id===match.teamA);const tb=teamsCache.find(t=>t.id===match.teamB);
+  document.getElementById('edit-score-a-label').textContent=(ta?.name||'Local')+' goles';
+  document.getElementById('edit-score-b-label').textContent=(tb?.name||'Visitante')+' goles';
+  openModal('modal-edit-match');
+}
+
+async function saveEditMatch(){
+  const week=activeTournament.schedule.find(w=>w.week===editingMatchRef.weekNum);
+  const match=week.matches.find(m=>m.id===editingMatchRef.matchId);
+  const dateVal=document.getElementById('edit-match-date').value;
+  if(dateVal){week.dateValue=dateVal;week.dateLabel=new Date(dateVal+'T12:00:00').toLocaleDateString('es-AR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
+  match.teamA=document.getElementById('edit-match-team-a').value;
+  match.teamB=document.getElementById('edit-match-team-b').value;
+  const status=document.getElementById('edit-match-status').value;
+  match.postponed=status==='postponed';
+  if(status==='played'){
+    match.played=true;match.postponed=false;
+    match.scoreA=parseInt(document.getElementById('edit-match-score-a').value)||0;
+    match.scoreB=parseInt(document.getElementById('edit-match-score-b').value)||0;
+  }else if(status==='upcoming'){match.played=false;match.scoreA=null;match.scoreB=null;}
+  await sb.from('tournaments').update({schedule:activeTournament.schedule}).eq('id',activeTournament.id);
+  toast('Partido actualizado ✓');closeModal('modal-edit-match');await loadAll();renderFixture();
+}
+
+// ===== GOLES =====
+function renderGoalScorers(){
+  const sa=parseInt(document.getElementById('result-score-a').value)||0;
+  const sb2=parseInt(document.getElementById('result-score-b').value)||0;
+  const c=document.getElementById('goal-scorers-container');
+  if(!currentMatchRef){c.innerHTML='';return;}
+  const week=activeTournament.schedule.find(w=>w.week===currentMatchRef.weekNum);
+  const match=week?.matches.find(m=>m.id===currentMatchRef.matchId);
+  if(!match){c.innerHTML='';return;}
+  const buildSection=(teamId,totalGoals,side)=>{
+    if(totalGoals<=0)return'';
+    const team=teamsCache.find(t=>t.id===teamId);
+    const players=playersCache.filter(p=>p.team_id===teamId);
+    if(!players.length)return'';
+    return `<div style="margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">${team?.name||'?'} (${totalGoals} gol${totalGoals!==1?'es':''})</div>
+      ${players.map(p=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border)">
+        <div style="flex:1;font-size:13px;font-weight:600">${p.name}</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <button class="btn btn-secondary btn-sm" style="padding:4px 10px" onclick="changeGoalQty('${side}-${p.id}',-1)">−</button>
+          <span id="gq-${side}-${p.id}" style="font-family:'Bebas Neue';font-size:20px;color:var(--accent);min-width:24px;text-align:center">0</span>
+          <button class="btn btn-secondary btn-sm" style="padding:4px 10px" onclick="changeGoalQty('${side}-${p.id}',1)">+</button>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  };
+  c.innerHTML=buildSection(match.teamA,sa,'A')+buildSection(match.teamB,sb2,'B');
+}
+
+function changeGoalQty(key,delta){
+  const el=document.getElementById('gq-'+key);if(!el)return;
+  const cur=parseInt(el.textContent)||0;
+  el.textContent=Math.max(0,cur+delta);
+}
+
+async function saveResult(){
+  const sa=parseInt(document.getElementById('result-score-a').value)||0;
+  const sb2=parseInt(document.getElementById('result-score-b').value)||0;
+  const week=activeTournament.schedule.find(w=>w.week===currentMatchRef.weekNum);
+  const match=week.matches.find(m=>m.id===currentMatchRef.matchId);
+  match.scoreA=sa;match.scoreB=sb2;match.played=true;match.postponed=false;
+  await sb.from('tournaments').update({schedule:activeTournament.schedule}).eq('id',activeTournament.id);
+  // Save goals — delete old first
+  await sb.from('goals').delete().eq('tournament_id',activeTournament.id).eq('match_id',match.id);
+  const goalsToInsert=[];
+  document.querySelectorAll('[id^="gq-"]').forEach(el=>{
+    const qty=parseInt(el.textContent)||0;if(qty<=0)return;
+    const key=el.id.replace('gq-','');// side-playerId
+    const parts=key.split('-');const side=parts[0];const playerId=parts.slice(1).join('-');
+    const teamId=side==='A'?match.teamA:match.teamB;
+    for(let i=0;i<qty;i++)goalsToInsert.push({tournament_id:activeTournament.id,match_id:match.id,player_id:playerId,team_id:teamId,quantity:1});
+  });
+  if(goalsToInsert.length)await sb.from('goals').insert(goalsToInsert);
+  toast('Resultado guardado ✓');closeModal('modal-result');await loadAll();renderFixture();
+}
+
+// ===== GOLEADORES =====
+async function renderGoleadores(){
+  const c=document.getElementById('goleadores-content');
+  if(!activeTournament){c.innerHTML=`<div class="empty-state"><div class="icon">⚽</div><p>Seleccioná un torneo.</p></div>`;return;}
+  const{data:goals}=await sb.from('goals').select('*').eq('tournament_id',activeTournament.id);
+  // Build map player -> goals
+  const goalMap={};
+  (goals||[]).forEach(g=>{goalMap[g.player_id]=(goalMap[g.player_id]||0)+1;});
+  // All players in tournament
+  const allPlayers=[];
+  (activeTournament.team_ids||[]).forEach(tid=>{
+    playersCache.filter(p=>p.team_id===tid).forEach(p=>allPlayers.push({...p,teamId:tid,goals:goalMap[p.id]||0}));
+  });
+  allPlayers.sort((a,b)=>b.goals-a.goals||a.name.localeCompare(b.name));
+  if(!allPlayers.length){c.innerHTML=`<div class="empty-state"><div class="icon">⚽</div><p>No hay jugadores en este torneo.</p></div>`;return;}
+  const rc=['gold','silver','bronze'];
+  c.innerHTML=`<div class="card" style="padding:0;overflow:hidden"><table class="standings-table">
+    <thead><tr><th>#</th><th>Jugador</th><th>Equipo</th><th>⚽ Goles</th></tr></thead>
+    <tbody>${allPlayers.map((p,i)=>{
+      const team=teamsCache.find(t=>t.id===p.teamId);
+      return `<tr><td><span class="rank-num ${p.goals>0?(rc[i]||''):''}">${i+1}</span></td>
+        <td><span style="font-weight:700">${p.name}</span></td>
+        <td><div class="team-inline">${teamLogoHTML(p.teamId)}<span style="font-size:13px;color:var(--text2)">${team?.name||'?'}</span></div></td>
+        <td><span style="font-family:'Bebas Neue';font-size:22px;color:${p.goals>0?'var(--accent)':'var(--text3)'}">${p.goals}</span></td>
+      </tr>`;
+    }).join('')}</tbody></table></div>`;
+}
+
+// ===== TRIBUNA =====
+let currentPostId=null;
+let postMediaB64=null,postMediaType=null;
+
+function previewPostMedia(input){
+  const file=input.files[0];if(!file)return;
+  postMediaType=file.type.startsWith('video')?'video':'image';
+  const reader=new FileReader();
+  reader.onload=e=>{
+    postMediaB64=e.target.result;
+    document.getElementById('media-preview-placeholder').style.display='none';
+    document.getElementById('media-preview-img').style.display=postMediaType==='image'?'block':'none';
+    document.getElementById('media-preview-video').style.display=postMediaType==='video'?'block':'none';
+    if(postMediaType==='image')document.getElementById('media-preview-img').src=e.target.result;
+    else document.getElementById('media-preview-video').src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function submitPost(){
+  const content=document.getElementById('post-content').value.trim();
+  if(!content&&!postMediaB64){toast('Escribí algo o subí una imagen/video','error');return;}
+  if(!activeTournament){toast('Seleccioná un torneo primero','error');return;}
+  const{error}=await sb.from('tribuna_posts').insert({
+    tournament_id:activeTournament.id,user_id:currentUser.id,
+    content:content||null,media_url:postMediaB64||null,media_type:postMediaType||null
+  });
+  if(error){toast('Error al publicar','error');return;}
+  toast('Post publicado ✓');closeModal('modal-new-post');
+  document.getElementById('post-content').value='';postMediaB64=null;postMediaType=null;
+  document.getElementById('media-preview-placeholder').style.display='';
+  document.getElementById('media-preview-img').style.display='none';
+  document.getElementById('media-preview-video').style.display='none';
+  renderTribuna();
+}
+
+async function renderTribuna(){
+  const c=document.getElementById('tribuna-content');
+  if(!activeTournament){c.innerHTML=`<div class="empty-state"><div class="icon">📣</div><p>Seleccioná un torneo.</p></div>`;return;}
+  const{data:posts}=await sb.from('tribuna_posts').select('*').eq('tournament_id',activeTournament.id).order('created_at',{ascending:false});
+  const{data:votes}=await sb.from('tribuna_votes').select('*').eq('user_id',currentUser.id);
+  const myVotes={};(votes||[]).forEach(v=>{myVotes[v.post_id]=v.vote;});
+  if(!posts?.length){c.innerHTML=`<div class="empty-state"><div class="icon">📣</div><p>No hay posts todavía.<br>¡Sé el primero en publicar algo!</p></div>`;return;}
+  const canModerate=(t)=>isAdmin()||(activeTournament?.created_by===currentUser.id)||t.user_id===currentUser.id;
+  c.innerHTML=posts.map(post=>{
+    const profile=allProfilesCache.find(p=>p.id===post.user_id);
+    const name=profile?.full_name||profile?.email||'Usuario';
+    const myVote=myVotes[post.id];
+    const timeAgo=formatTimeAgo(post.created_at);
+    return `<div class="post-card ${post.reported?'reported':''}" id="post-${post.id}">
+      ${post.reported?'<div style="font-size:11px;color:var(--red);font-weight:700;margin-bottom:8px">⚠️ CONTENIDO DENUNCIADO</div>':''}
+      <div class="post-header">
+        <div class="post-avatar">${name[0].toUpperCase()}</div>
+        <div><div class="post-author">${name}</div><div class="post-time">${timeAgo}</div></div>
+        ${canModerate(post)?`<button class="btn btn-danger btn-sm" style="margin-left:auto" onclick="deletePost('${post.id}')">🗑️ Eliminar</button>`:''}
+      </div>
+      ${post.content?`<div class="post-content">${post.content}</div>`:''}
+      ${post.media_url&&post.media_type==='image'?`<img class="post-media" src="${post.media_url}" onclick="window.open(this.src)">`:''}
+      ${post.media_url&&post.media_type==='video'?`<video class="post-media" controls src="${post.media_url}"></video>`:''}
+      <div class="post-actions">
+        <button class="post-action-btn ${myVote==='like'?'liked':''}" onclick="votePost('${post.id}','like')">👍 ${post.likes||0}</button>
+        <button class="post-action-btn ${myVote==='dislike'?'disliked':''}" onclick="votePost('${post.id}','dislike')">👎 ${post.dislikes||0}</button>
+        <button class="post-action-btn" onclick="openComments('${post.id}')">💬 Comentar</button>
+        ${!post.reported?`<button class="post-action-btn report" onclick="reportPost('${post.id}')">🚩 Denunciar contenido</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function formatTimeAgo(dateStr){
+  const diff=Date.now()-new Date(dateStr).getTime();
+  const mins=Math.floor(diff/60000);const hrs=Math.floor(mins/60);const days=Math.floor(hrs/24);
+  if(days>0)return `hace ${days} día${days!==1?'s':''}`;
+  if(hrs>0)return `hace ${hrs} hora${hrs!==1?'s':''}`;
+  if(mins>0)return `hace ${mins} minuto${mins!==1?'s':''}`;
+  return 'ahora';
+}
+
+async function votePost(postId,vote){
+  const{data:existing}=await sb.from('tribuna_votes').select('*').eq('post_id',postId).eq('user_id',currentUser.id);
+  const post=await sb.from('tribuna_posts').select('likes,dislikes').eq('id',postId).single();
+  let likes=post.data?.likes||0,dislikes=post.data?.dislikes||0;
+  if(existing?.length>0){
+    const prev=existing[0].vote;
+    if(prev===vote){// toggle off
+      await sb.from('tribuna_votes').delete().eq('post_id',postId).eq('user_id',currentUser.id);
+      if(vote==='like')likes=Math.max(0,likes-1);else dislikes=Math.max(0,dislikes-1);
+    }else{// switch vote
+      await sb.from('tribuna_votes').update({vote}).eq('post_id',postId).eq('user_id',currentUser.id);
+      if(vote==='like'){likes++;dislikes=Math.max(0,dislikes-1);}else{dislikes++;likes=Math.max(0,likes-1);}
+    }
+  }else{
+    await sb.from('tribuna_votes').insert({post_id:postId,user_id:currentUser.id,vote});
+    if(vote==='like')likes++;else dislikes++;
+  }
+  await sb.from('tribuna_posts').update({likes,dislikes}).eq('id',postId);
+  renderTribuna();
+}
+
+async function reportPost(postId){
+  if(!confirm('¿Querés denunciar este contenido como inapropiado?'))return;
+  await sb.from('tribuna_posts').update({reported:true,reported_by:currentUser.id}).eq('id',postId);
+  // Create notification for organizer/admin
+  const reporter=allProfilesCache.find(p=>p.id===currentUser.id);
+  toast('Contenido denunciado. El organizador será notificado.','warning');
+  renderTribuna();
+}
+
+async function deletePost(postId){
+  if(!confirm('¿Eliminar este post?'))return;
+  await sb.from('tribuna_comments').delete().eq('post_id',postId);
+  await sb.from('tribuna_votes').delete().eq('post_id',postId);
+  await sb.from('tribuna_posts').delete().eq('id',postId);
+  toast('Post eliminado','warning');renderTribuna();
+}
+
+async function openComments(postId){
+  currentPostId=postId;
+  await loadComments();
+  openModal('modal-comments');
+}
+
+async function loadComments(){
+  const{data:comments}=await sb.from('tribuna_comments').select('*').eq('post_id',currentPostId).order('created_at');
+  const list=document.getElementById('comments-list');
+  if(!comments?.length){list.innerHTML='<p style="color:var(--text3);font-size:13px;text-align:center;padding:20px">Sin comentarios todavía.</p>';return;}
+  list.innerHTML=comments.map(cm=>{
+    const profile=allProfilesCache.find(p=>p.id===cm.user_id);
+    const name=profile?.full_name||profile?.email||'Usuario';
+    return `<div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="width:32px;height:32px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;border:1px solid var(--border)">${name[0].toUpperCase()}</div>
+      <div><div style="font-weight:700;font-size:13px">${name} <span style="font-weight:400;color:var(--text3);font-size:11px">${formatTimeAgo(cm.created_at)}</span></div>
+      <div style="font-size:13px;color:var(--text);margin-top:3px;line-height:1.5">${cm.content}</div></div>
+    </div>`;
+  }).join('');
+}
+
+async function submitComment(){
+  const text=document.getElementById('new-comment-text').value.trim();if(!text)return;
+  await sb.from('tribuna_comments').insert({post_id:currentPostId,user_id:currentUser.id,content:text});
+  document.getElementById('new-comment-text').value='';
+  await loadComments();
+}
+
+// ===== FIX: Update renderFixture to include edit button =====
+function renderFixture(){
+  const c=document.getElementById('fixture-content');
+  if(!activeTournament){c.innerHTML=`<div class="empty-state"><div class="icon">📅</div><p>Seleccioná un torneo.</p></div>`;return;}
+  const canEdit=isOrganizerOf(activeTournament);
+  c.innerHTML=(activeTournament.schedule||[]).map(week=>{
+    const allPlayed=week.matches.every(m=>m.played);const anyPost=week.matches.some(m=>m.postponed);
+    const sc=allPlayed?'status-played':anyPost?'status-postponed':'status-upcoming';
+    const sl=allPlayed?'Jugado':anyPost?'Postergado':'Próximo';
+    return `<div class="fixture-week"><div class="week-header">
+      <div class="week-label">FECHA ${week.week}</div>
+      ${week.dateLabel?`<span style="font-size:12px;color:var(--text3)">${week.dateLabel}</span>`:''}
+      <div class="week-line"></div>
+      <span class="week-status ${sc}">${sl}</span>
+    </div>
+    ${week.matches.map(m=>{
+      const ta=teamsCache.find(t=>t.id===m.teamA),tb=teamsCache.find(t=>t.id===m.teamB);
+      return `<div class="match-card ${canEdit?'editable':''}">
+        <div class="match-team">${teamLogoHTML(m.teamA,36)}<span class="match-team-name">${ta?.name||'?'}</span></div>
+        <div class="match-score"><span class="score-num">${m.played?m.scoreA:'—'}</span><span class="score-sep">:</span><span class="score-num">${m.played?m.scoreB:'—'}</span></div>
+        <div class="match-team right"><span class="match-team-name">${tb?.name||'?'}</span>${teamLogoHTML(m.teamB,36)}</div>
+        ${canEdit?`<div class="match-actions">
+          ${!m.played?`<button class="btn btn-primary btn-sm" onclick="openResult(${week.week},'${m.id}')">Cargar</button>`:`<button class="btn btn-secondary btn-sm" onclick="undoResult(${week.week},'${m.id}')">✏️ Editar</button>`}
+          <button class="btn btn-secondary btn-sm" onclick="openEditMatch(${week.week},'${m.id}')">⚙️</button>
+        </div>`:''}
+      </div>`;
+    }).join('')}</div>`;
+  }).join('');
+}
 </script>
 </body>
 </html>

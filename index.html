@@ -183,6 +183,18 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 /* PLAYER TOURNAMENT BAR */
 #player-tournament-bar{display:none;margin-bottom:24px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 20px;flex-wrap:wrap;gap:12px;align-items:center}
 #no-tournament-screen{display:none;text-align:center;padding:80px 20px}
+/* BOTTOM NAV (mobile only) */
+#bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:64px;background:var(--surface);border-top:1px solid var(--border);z-index:150;align-items:stretch;justify-content:space-around;padding:0 4px;padding-bottom:env(safe-area-inset-bottom)}
+.bottom-nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex:1;border:none;background:none;color:var(--text3);cursor:pointer;padding:6px 2px;border-radius:10px;transition:color .15s;font-family:'Barlow',sans-serif;min-width:0}
+.bottom-nav-btn.active{color:var(--accent)}
+.bottom-nav-btn .bn-icon{font-size:20px;line-height:1}
+.bottom-nav-btn .bn-label{font-size:9px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:52px}
+.bn-wrap{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bn-badge{position:absolute;top:-4px;right:-6px;background:var(--red);color:#fff;border-radius:20px;font-size:9px;font-weight:700;padding:1px 5px}
+#more-panel{display:none;position:fixed;bottom:64px;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:149;padding:12px;grid-template-columns:repeat(3,1fr);gap:8px}
+#more-panel.open{display:grid}
+.more-item{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;cursor:pointer;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;transition:background .15s}
+.more-item .mi-icon{font-size:24px}
 /* TRIBUNA */
 .post-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px}
 .post-card.reported{border-color:var(--red);opacity:.7}
@@ -206,7 +218,22 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 /* EDIT MATCH */
 .match-card.editable{cursor:pointer}.match-card.editable:hover{border-color:var(--accent2)}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-@media(max-width:640px){.sidebar{width:60px}.nav-btn span,.nav-badge,.notif-btn span{display:none}.logo-title{font-size:18px}.logo-sub{display:none}.main{margin-left:60px;padding:16px}.form-row{grid-template-columns:1fr}.notif-panel{width:100vw}}
+@media(max-width:640px){
+  /* Ocultar sidebar en móvil */
+  .sidebar{display:none}
+  /* Main ocupa todo el ancho, con padding bottom para bottom bar */
+  .main{margin-left:0;padding:16px;padding-bottom:80px}
+  /* Bottom navigation bar */
+  #bottom-nav{display:flex!important}
+  /* Notif panel ocupa toda la pantalla */
+  .notif-panel{width:100vw;left:0}
+  /* Ajustes de contenido */
+  .form-row{grid-template-columns:1fr}
+  .page-title{font-size:32px}
+  .torneo-card-actions{gap:6px}
+  .match-card{padding:12px}
+  .modal{padding:20px}
+}
 </style>
 </head>
 <body>
@@ -271,6 +298,40 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
     </div>
     <div class="notif-list" id="notif-list"></div>
   </div>
+
+  <!-- MORE PANEL (mobile) -->
+  <div id="more-panel">
+    <div class="more-item" onclick="closeMobileMore();showPage('posiciones')"><div class="mi-icon">📊</div>Posiciones</div>
+    <div class="more-item" onclick="closeMobileMore();showPage('goleadores')"><div class="mi-icon">⚽</div>Goleadores</div>
+    <div class="more-item" onclick="closeMobileMore();showPage('compromiso')"><div class="mi-icon">🎖️</div>Compromiso</div>
+    <div class="more-item" onclick="closeMobileMore();showPage('tribuna')"><div class="mi-icon">📣</div>Tribuna</div>
+    <div class="more-item" onclick="closeMobileMore();showPage('equipos')"><div class="mi-icon">🛡️</div>Equipos</div>
+    <div class="more-item" id="more-usuarios" style="display:none" onclick="closeMobileMore();showPage('usuarios')"><div class="mi-icon">👑</div>Usuarios</div>
+    <div class="more-item" onclick="closeMobileMore();toggleNotifPanel()">
+      <div class="mi-icon">🔔<span id="more-notif-badge" style="display:none;font-size:10px;color:var(--red)"> ●</span></div>Notificaciones
+    </div>
+    <div class="more-item" onclick="doLogout()"><div class="mi-icon">🚪</div>Salir</div>
+  </div>
+
+  <!-- BOTTOM NAV (mobile) -->
+  <nav id="bottom-nav">
+    <button class="bottom-nav-btn" onclick="showPage('mis-torneos')" id="bn-mis-torneos">
+      <div class="bn-wrap"><span class="bn-icon">🏆</span></div>
+      <span class="bn-label">Torneos</span>
+    </button>
+    <button class="bottom-nav-btn" onclick="showPage('confirma')" id="bn-confirma">
+      <div class="bn-wrap"><span class="bn-icon">✅</span></div>
+      <span class="bn-label">Mi lugar</span>
+    </button>
+    <button class="bottom-nav-btn" onclick="showPage('fixture')" id="bn-fixture">
+      <div class="bn-wrap"><span class="bn-icon">📅</span></div>
+      <span class="bn-label">Fixture</span>
+    </button>
+    <button class="bottom-nav-btn" onclick="toggleMobileMore()" id="bn-more">
+      <div class="bn-wrap"><span class="bn-icon">☰</span></div>
+      <span class="bn-label">Más</span>
+    </button>
+  </nav>
 
   <main class="main">
     <!-- SELECTOR TORNEO (jugadores en varias) -->
@@ -745,6 +806,7 @@ async function loadAll(){
 
 // ===== PAGES =====
 function showPage(name){
+  closeMobileMore();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn,.notif-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('no-tournament-screen').style.display='none';
@@ -752,7 +814,7 @@ function showPage(name){
   const playerPages=['confirma','posiciones','fixture','goleadores','compromiso','tribuna'];
   if(playerPages.includes(name)){
     const myIds=getMyTournamentIds();
-    if(myIds.length===0){document.getElementById('no-tournament-screen').style.display='block';return;}
+    if(myIds.length===0){document.getElementById('no-tournament-screen').style.display='block';updateBottomNav(name);return;}
     if(myIds.length>1){document.getElementById('player-tournament-bar').style.display='flex';renderPlayerTournamentTabs();}
     if(!activeTournament||!myIds.includes(activeTournament.id)){
       activeTournament=tournamentsCache.find(t=>t.id===myIds[0])||null;
@@ -762,6 +824,7 @@ function showPage(name){
   document.querySelectorAll('.nav-btn,.notif-btn').forEach(b=>{
     if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+name+"'"))b.classList.add('active');
   });
+  updateBottomNav(name);
   if(name==='mis-torneos')renderMisTorneos();
   if(name==='equipos')renderTeams();
   if(name==='confirma')renderPresence();
@@ -1755,6 +1818,25 @@ function renderFixture(){
       </div>`;
     }).join('')}</div>`;
   }).join('');
+}
+
+// ===== MOBILE BOTTOM NAV =====
+function toggleMobileMore(){
+  const panel=document.getElementById('more-panel');
+  panel.classList.toggle('open');
+}
+function closeMobileMore(){
+  document.getElementById('more-panel').classList.remove('open');
+}
+// Update bottom nav active state
+function updateBottomNav(name){
+  document.querySelectorAll('.bottom-nav-btn').forEach(b=>b.classList.remove('active'));
+  const map={'mis-torneos':'bn-mis-torneos','confirma':'bn-confirma','fixture':'bn-fixture'};
+  const btnId=map[name];
+  if(btnId)document.getElementById(btnId)?.classList.add('active');
+  else document.getElementById('bn-more')?.classList.add('active');
+  // Show admin items in more panel
+  document.getElementById('more-usuarios').style.display=isAdmin()?'flex':'none';
 }
 
 // ===== PWA =====

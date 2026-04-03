@@ -495,6 +495,8 @@ async function doLogin(){
   const pass=document.getElementById('login-password').value;
   hideAuthMsg('login-msg');
   const btn=document.getElementById('login-btn');btn.textContent='Entrando...';btn.disabled=true;
+  // Limpiar sesión anterior antes de intentar login
+  await sb.auth.signOut().catch(()=>{});
   const{error}=await sb.auth.signInWithPassword({email,password:pass});
   if(error){showAuthMsg('login-msg','Email o contraseña incorrectos.','error');btn.textContent='Entrar';btn.disabled=false;}
 }

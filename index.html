@@ -648,8 +648,6 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
 
 // ===== EQUIPOS =====
-let editingTeamLogoB64=null,playerRowCount=0;
-
 function previewLogo(input){
   const file=input.files[0];if(!file)return;
   const reader=new FileReader();
